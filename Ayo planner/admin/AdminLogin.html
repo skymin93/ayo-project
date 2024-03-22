@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+        }
+
+        h1 {
+            height: 70px;
+            line-height: 70px;
+            background-color: lightblue;
+            font-size: 36px;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+
+        .login {
+            width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            font-size: 24px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        input[type="email"],
+        input[type="password"],
+        input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        input[type="submit"] {
+            background-color: lightblue;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #007bff;
+        }
+
+        a {
+            display: block;
+            text-align: center;
+            text-decoration: none;
+            color: #007bff;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Ayo Planner Admin</h1>
+    <div class="login">
+        <form>
+            <h2>Login</h2>
+            <ul>
+                <li>
+                    <label for="admin-email">이메일 주소</label>
+                    <input type="email" id="admin-email">
+                </li>
+                <li>
+                    <label for="admin-password">비밀번호</label>
+                    <input type="password" id="admin-password">
+                </li>
+                <li>
+                    <input type="submit" value="로그인">
+                </li>
+                <li>
+                    <a href="AdminSignUp.html">회원가입</a>
+                    <a href="AdminFindPassword.html">비밀번호 찾기</a>
+                </li>
+            </ul>
+        </form>
+    </div>
+</body>
+
+</html>

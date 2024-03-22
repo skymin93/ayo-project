@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Sign Up</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+        }
+
+        h1 {
+            height: 70px;
+            line-height: 70px;
+            background-color: lightblue;
+            font-size: 36px;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+
+        .sign-up {
+            width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            font-size: 24px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            flex: 1;
+        }
+
+        input[type="email"],
+        input[type="password"],
+        input[type="text"],
+        input[type="tel"] {
+            width: calc(100% - 130px);
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            flex: 1;
+        }
+
+        input[type="submit"],
+        input[type="reset"] {
+            width: 190px;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        input[type="submit"]:hover,
+        input[type="reset"]:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Ayo Planner Admin</h1>
+    <div class="sign-up">
+        <form>
+            <h2>회원가입</h2>
+            <ul>
+                <li>
+                    <label for="admin-email">이메일 주소</label>
+                    <input type="email" id="admin-email">
+                </li>
+                <li>
+                    <label for="admin-password">비밀번호</label>
+                    <input type="password" id="admin-password">
+                </li>
+                <li>
+                    <label for="admin-passwordConfirm">비밀번호 확인</label>
+                    <input type="password" id="admin-passwordConfirm">
+                </li>
+                <li>
+                    <label for="admin-name">이름</label>
+                    <input type="text" id="admin-name">
+                </li>
+                <li>
+                    <label for="admin-tel">연락처</label>
+                    <input type="tel" id="admin-tel">
+                </li>
+                <li>
+                    <label for="admin-position">직책</label>
+                    <input type="text" id="admin-position">
+                </li>
+                <li>
+                    <input type="submit" value="가입하기">
+                    <input type="reset" value="초기화">
+                </li>
+            </ul>
+        </form>
+    </div>
+</body>
+
+</html>
