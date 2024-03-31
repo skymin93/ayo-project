@@ -1,0 +1,8 @@
+        /* 탭 내용 숨기기 */
+        .tab-content {
+            display: none;
+        }
+        /* 활성 탭 내용 보이기 */
+        .active {
+            display: block;
+        }
