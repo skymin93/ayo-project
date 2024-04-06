@@ -35,13 +35,11 @@ public class UserController {
     private final CommentService commentService;
     private final UserRepository userRepository;
     
-	// /signup URL이 GET으로 요청되면 회원 가입을 위한 템플릿 렌더링
 	@GetMapping("/signup")
 	public String signup(UserCreateForm userCreateForm) {
 		return "signup_form";
 	}
 	
-	// /signup URL이 POST로 요청되면 회원가입 진행
 	@PostMapping("/signup")
 	public String signup(@Valid UserCreateForm userCreateForm, BindingResult bindingResult)
 	{
@@ -72,13 +70,11 @@ public class UserController {
 		return "redirect:/";
 	}
 	
-	//로그인 화면
 	@GetMapping("/login")
 	public String login(){
 		return "login_form";
 	}
 	
-	//비밀번호 찾기시, 임시 비밀번호 담긴 이메일 보내기
 	@GetMapping("/tempPassword")
 	public String tempPassword(TempPasswordForm tempPasswordForm) {
 	return "TempPasswordForm";
@@ -104,7 +100,6 @@ public class UserController {
 	    return "redirect:/";
 	}
 	
-	//마이페이지 화면
 		@PreAuthorize("isAuthenticated()") //ok
 		@GetMapping("/mypage")
 		public String profile(Model model,
@@ -120,13 +115,11 @@ public class UserController {
 		        return "mypage";
 		    }
 	
-		//회원정보수정전 비밀번호 체크 view
 		@GetMapping("/mypage/checkPwdForm")
 		public String checkPwdView() {
 			return "checkPwdForm";
 		}
 		
-		//회원정보수정전 비밀번호 체크
 		@GetMapping("mypage/checkPwd")
 		@ResponseBody
 		public boolean checkPassword(@AuthenticationPrincipal PrincipalDetails principal,
@@ -139,14 +132,12 @@ public class UserController {
 			return userService.checkPassword(checkName, checkPassword);
 		}
 		
-		//로그인 되어있는 회원정보 수정 view
 		/*@PreAuthorize("isAuthenticated()")
 		@GetMapping("/mypage/profile")
 		public String modifyInfo(@AuthenticationPrincipal PrincipalDetails principal) {
 			return "mypage_profile";
 		}*/
 		
-		//로그인 되어있는 회원정보 수정 view
 		@PreAuthorize("isAuthenticated()")
 		@GetMapping("/mypage/profile") //userService에 있는 getUser를 이용하여 현재 로그인 되어있는 사용자의 정보를 가져온다
 		public String modifyInfo(Principal principal, Model model) {
@@ -156,7 +147,6 @@ public class UserController {
 			return "mypage_profile";
 		}
 
-	//로그인 되어있는 회원정보 수정 
 	@PreAuthorize("isAuthenticated()")
 	@PostMapping("/mypage/profile")
 	@Transactional
@@ -166,7 +156,6 @@ public class UserController {
 			return "redirect:/mypage";
 	}
 	
-	//회원탈퇴 화면
 	@PreAuthorize("isAuthenticated()")
 	@GetMapping("/mypage/deleteUser")
 	public String userDelete(UserDeleteForm userDeleteForm, Model model, Principal principal) {
@@ -175,7 +164,6 @@ public class UserController {
 		return "mypage_deleteUser";
 	}
 	
-	//계정삭제
 	/*@PreAuthorize("isAuthenticated()")
 	@GetMapping("mypage/deleteUser/{id}")
     public String deleteUser(Principal principal, @PathVariable String password) {
