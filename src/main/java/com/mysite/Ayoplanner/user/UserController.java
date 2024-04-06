@@ -18,7 +18,7 @@ import com.mysite.Ayoplanner.community.comment.CommentService;
 import com.mysite.Ayoplanner.community.post.PostService;
 import com.mysite.Ayoplanner.exception.DataNotFoundException;
 import com.mysite.Ayoplanner.exception.EmailException;
-import com.mysite.Ayoplanner.mail.TempPasswordForm;
+import com.mysite.Ayoplanner.user.TempPasswordForm;
 import com.mysite.Ayoplanner.snslogin.PrincipalDetails;
 
 import jakarta.transaction.Transactional;
