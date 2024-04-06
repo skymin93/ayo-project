@@ -1,4 +1,4 @@
-package com.mysite.Ayoplanner.mail;
+package com.mysite.Ayoplanner.user;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
