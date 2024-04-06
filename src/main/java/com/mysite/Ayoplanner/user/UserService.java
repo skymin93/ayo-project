@@ -13,7 +13,7 @@ import com.mysite.Ayoplanner.exception.DataNotFoundException;
 import com.mysite.Ayoplanner.exception.EmailException;
 import com.mysite.Ayoplanner.exception.ErrorCode;
 import com.mysite.Ayoplanner.exception.UserDataIntegrityViolationException;
-import com.mysite.Ayoplanner.mail.TempPasswordMail;
+import com.mysite.Ayoplanner.user.TempPasswordMail;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
