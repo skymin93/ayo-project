@@ -1,4 +1,4 @@
-package com.mysite.Ayoplanner.mail;
+package com.mysite.Ayoplanner.user;
 
 import java.io.UnsupportedEncodingException;
 import org.springframework.mail.MailException;
@@ -38,7 +38,7 @@ public class TempPasswordMail implements MailService {
         msgg += ePw + "</strong><div><br/> ";
         msgg += "</div>";
         message.setText(msgg, "utf-8", "html");
-        message.setFrom(new InternetAddress("cbk425@gmail.com", "sbb_Admin"));
+        message.setFrom(new InternetAddress("cbk425@gmail.com", "AyoPlanner"));
 
         return message;
     }
