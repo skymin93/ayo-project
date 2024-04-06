@@ -17,7 +17,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Category {
-	//Category 엔티티를 추가하고 Question 엔티티에 Category 엔티티를 연결 -> 게시판 분류
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
