@@ -49,7 +49,6 @@ public class UserService {
         }
     }
 	
-	//비밀번호찾기-임시비밀번호발송
 	@Transactional
     public void modifyPassword(String email) throws EmailException {
         String tempPassword = commonUtil.createTempPassword();
@@ -60,7 +59,6 @@ public class UserService {
         tempPasswordMail.sendSimpleMessage(email, tempPassword);
     }
     
-	//마이페이지 - 비밀번호 체크 확인
 	@ResponseBody
 	public boolean checkPassword(SiteUser user, String checkPassword) {
 		Optional<SiteUser> findUser = userRepository.findByEmail(user.getEmail());
@@ -73,13 +71,11 @@ public class UserService {
 		return matches;
 	}
 	
-	//마이페이지 - 회원정보 수정
     public Long modifyUser(UserModifyForm userModifyForm) {
         SiteUser user = userRepository.findByemail(userModifyForm.getEmail());
         user.updateUsername(userModifyForm.getUsername());
         user.updatePassword(userModifyForm.getPassword());
 
-        // 회원 비밀번호 수정을 위한 패스워드 암호화
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         String encodePw = encoder.encode(userModifyForm.getPassword());
         user.updatePassword(encodePw);
@@ -89,7 +85,6 @@ public class UserService {
         return user.getId();
     }
 		
-	//마이페이지 - 회원 삭제
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
     }
