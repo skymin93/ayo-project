@@ -39,7 +39,7 @@ public class Post {
 	private LocalDateTime createDate;
 
 	@OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
-	private List<Answer> answerList;// 여러개니까 List형태로
+	private List<Answer> answerList;
 
 	@ManyToOne
 	private SiteUser author;
