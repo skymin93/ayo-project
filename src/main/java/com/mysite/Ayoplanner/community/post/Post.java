@@ -23,39 +23,39 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@Entity 
+@Entity
+
 public class Post {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
-	
-	@Column(length=200)
+
+	@Column(length = 200)
 	private String subject;
-	
+
 	@Column(columnDefinition = "TEXT")
 	private String content;
-	
-	private LocalDateTime createDate; 
-	
-	@OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE) 
-	private List<Answer> answerList;
-	
+
+	private LocalDateTime createDate;
+
+	@OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
+	private List<Answer> answerList;// 여러개니까 List형태로
+
 	@ManyToOne
 	private SiteUser author;
-	
+
 	private LocalDateTime modifyDate;
-	
+
 	@ManyToMany
 	Set<SiteUser> voter;
-	
+
 	@OneToMany(mappedBy = "post")
-    private List<Comment> commentList;
-	
-	@ManyToOne//many posts can have one category
+	private List<Comment> commentList;
+
+	@ManyToOne // many posts can have one category
 	private Category category;
-	
-	//조회수
+
 	@Column(columnDefinition = "Integer default 0", nullable = false)
 	private int countview;
 
-	}
+}
