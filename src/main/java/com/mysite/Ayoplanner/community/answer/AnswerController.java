@@ -22,7 +22,7 @@ import com.mysite.Ayoplanner.user.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-@RequestMapping("/answer") // url 프리픽스를 /answer로 고정
+@RequestMapping("/answer")
 @RequiredArgsConstructor
 @Controller
 public class AnswerController {
@@ -31,7 +31,6 @@ public class AnswerController {
 	private final AnswerService answerService;
 	private final UserService userService;
 
-	// /answer/create/{id}와 같은 URL 요청 시 createAnswer 메서드가 호출되도록 @PostMapping으로 매핑한다.
 	@PreAuthorize("isAuthenticated()")
 	@PostMapping("/create/{id}")
 
