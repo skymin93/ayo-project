@@ -15,7 +15,6 @@ public interface AnswerRepository extends JpaRepository<Answer, Integer> {
 
 	Long countByAuthor(SiteUser author);
 
-	// 마이페이지에서 보여 줄 최신순 답변 5개
 	List<Answer> findTop5ByAuthorOrderByCreateDateDesc(SiteUser user);
 
 	Page<Answer> findAllByPost(Post post, Pageable pagealbe);
