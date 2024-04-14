@@ -57,7 +57,6 @@ public class AnswerService {
 		this.answerRepository.save(answer);
 	}
 
-	/* 마이페이지에서 보여 줄 답변의 개수 */
 	public Long getAnswerCount(SiteUser author) {
 		return answerRepository.countByAuthor(author);
 	}
