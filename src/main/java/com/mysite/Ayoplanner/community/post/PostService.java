@@ -34,24 +34,42 @@ public class PostService {
 	private final PostRepository postRepository;
 	private final CategoryService categoryService;
 
+	public Page<Post> getPersonalPostListByPostAuthorId(int page, String kw, Long authorId) {
+		List<Sort.Order> sorts = new ArrayList<>();
+		sorts.add(Sort.Order.desc("createDate"));
+		Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
+		return postRepository.findAllByKeywordAndAuthorId(kw, authorId, pageable);
+	}
+
+	public Page<Post> getPersonalPostListByAnswer_AuthorId(int page, String kw, Long answerAuthorId) {
+		List<Sort.Order> sorts = new ArrayList<>();
+		sorts.add(Sort.Order.desc("createDate"));
+		Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
+		return postRepository.findAllByKeywordAndAnswer_AuthorId(kw, answerAuthorId, pageable);
+	}
+
+	public List<Post> getAllPosts() {
+		return postRepository.findAll();
+	}
+
 	private Specification<Post> search(String kw, String categoryName) {
 		return new Specification<>() {
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public Predicate toPredicate(Root<Post> q, CriteriaQuery<?> query, CriteriaBuilder cb) {
-				query.distinct(true); // 중복 제거
+				query.distinct(true);
 				Join<Post, SiteUser> u1 = q.join("author", JoinType.LEFT);
 				Join<Post, Answer> a = q.join("answerList", JoinType.LEFT);
 				Join<Post, Category> c = q.join("category", JoinType.LEFT);
 				Join<Answer, SiteUser> u2 = a.join("author", JoinType.LEFT);
-				return cb.and(cb.or(cb.like(q.get("subject"), "%" + kw + "%"), // 제목
-						cb.like(q.get("content"), "%" + kw + "%"), // 내용
-						cb.like(u1.get("username"), "%" + kw + "%"), // 질문 작성자
-						cb.like(a.get("content"), "%" + kw + "%"), // 답변 내용
-						cb.like(u2.get("username"), "%" + kw + "%")), // 답변 작성자
+				return cb.and(cb.or(cb.like(q.get("subject"), "%" + kw + "%"),
+						cb.like(q.get("content"), "%" + kw + "%"),
+						cb.like(u1.get("username"), "%" + kw + "%"),
+						cb.like(a.get("content"), "%" + kw + "%"),
+						cb.like(u2.get("username"), "%" + kw + "%")),
 						// and
-						cb.like(c.get("name"), "%" + categoryName + "%")); // 카테고리 이름
+						cb.like(c.get("name"), "%" + categoryName + "%"));
 			}
 		};
 	}
@@ -104,5 +122,41 @@ public class PostService {
 		} else {
 			throw new DataNotFoundException(ErrorCode.RESOURCE_NOT_FOUND);
 		}
+	}
+
+	public Page<Post> getAllList(int page, String kw) {
+		List<Sort.Order> sorts = new ArrayList<>();
+		sorts.add(Sort.Order.desc("createDate"));
+		Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
+		Specification<Post> spec = searchAllList(kw);
+		return this.postRepository.findAll(spec, pageable);
+	}
+
+	private Specification<Post> searchAllList(String kw) {
+		return new Specification<>() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public Predicate toPredicate(Root<Post> q, CriteriaQuery<?> query, CriteriaBuilder cb) {
+				query.distinct(true);
+				Join<Post, SiteUser> u1 = q.join("author", JoinType.LEFT);
+				Join<Post, Answer> a = q.join("answerList", JoinType.LEFT);
+				Join<Answer, SiteUser> u2 = a.join("author", JoinType.LEFT);
+				return cb.or(cb.like(q.get("subject"), "%" + kw + "%"),
+						cb.like(q.get("content"), "%" + kw + "%"),
+						cb.like(u1.get("username"), "%" + kw + "%"),
+						cb.like(a.get("content"), "%" + kw + "%"),
+						cb.like(u2.get("username"), "%" + kw + "%")
+				);
+			}
+		};
+	}
+
+	public Long getPostCount(SiteUser author) {
+		return postRepository.countByAuthor(author);
+	}
+
+	public List<Post> getPostTop5LatestByUser(SiteUser author) {
+		return postRepository.findTop5ByAuthorOrderByCreateDateDesc(author);
 	}
 }
