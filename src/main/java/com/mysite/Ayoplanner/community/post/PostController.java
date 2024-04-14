@@ -34,18 +34,17 @@ public class PostController {
 	private final AnswerService answerService;
 	private final CategoryService categoryService;
 
-	// postlist 첫화면
-	@GetMapping("post/list")
-	public String questionList(Model model, @RequestParam(value = "page", defaultValue = "0") int page,
+	@GetMapping("/post/list")
+	public String getLatestPosts(Model model, @RequestParam(value = "page", defaultValue = "0") int page,
 			@RequestParam(value = "kw", defaultValue = "") String kw) {
-		Page<Post> paging = this.postService.getList(page, kw, "질문");
-		model.addAttribute("paging", paging);
+		Page<Post> latestPosts = postService.getAllList(page, kw);
+		model.addAttribute("latestPosts", latestPosts.getContent());
+		model.addAttribute("paging", latestPosts);
 		model.addAttribute("kw", kw);
 		return "post_list";
 	}
 
-	// post 상세 페이지
-	@GetMapping(value = "post/detail/{id}")
+	@GetMapping(value = "/post/detail/{id}")
 	public String detail(Model model, @PathVariable("id") Integer id, AnswerForm answerForm,
 			@RequestParam(value = "answerPage", defaultValue = "0") int answerPage) {
 		Post post = this.postService.getPost(id);
@@ -55,8 +54,16 @@ public class PostController {
 		return "post_detail";
 	}
 
-	// transportation list
-	@GetMapping("post/list/transportation")
+	@GetMapping("/post/list/joinMember")
+	public String joinMemberList(Model model, @RequestParam(value = "page", defaultValue = "0") int page,
+			@RequestParam(value = "kw", defaultValue = "") String kw) {
+		Page<Post> paging = this.postService.getList(page, kw, "가입인사");
+		model.addAttribute("paging", paging);
+		model.addAttribute("kw", kw);
+		return "post_list_joinMember";
+	}
+
+	@GetMapping("/post/list/transportation")
 	public String transportationList(Model model, @RequestParam(value = "page", defaultValue = "0") int page,
 			@RequestParam(value = "kw", defaultValue = "") String kw) {
 		Page<Post> paging = this.postService.getList(page, kw, "교통");
@@ -65,8 +72,7 @@ public class PostController {
 		return "post_list_transportation";
 	}
 
-	// tripplan list
-	@GetMapping("post/list/tripplan")
+	@GetMapping("/post/list/tripplan")
 	public String tripplanList(Model model, @RequestParam(value = "page", defaultValue = "0") int page,
 			@RequestParam(value = "kw", defaultValue = "") String kw) {
 		Page<Post> paging = this.postService.getList(page, kw, "여행일정");
@@ -75,8 +81,7 @@ public class PostController {
 		return "post_list_tripplan";
 	}
 
-	// city list
-	@GetMapping("post/list/city")
+	@GetMapping("/post/list/city")
 	public String cityList(Model model, @RequestParam(value = "page", defaultValue = "0") int page,
 			@RequestParam(value = "kw", defaultValue = "") String kw) {
 		Page<Post> paging = this.postService.getList(page, kw, "도시별");
@@ -85,28 +90,25 @@ public class PostController {
 		return "post_list_city";
 	}
 
-	// expenses list
-	@GetMapping("post/list/expenses")
+	@GetMapping("/post/list/expenses")
 	public String expensesList(Model model, @RequestParam(value = "page", defaultValue = "0") int page,
 			@RequestParam(value = "kw", defaultValue = "") String kw) {
-		Page<Post> paging = this.postService.getList(page, kw, "기타비용");
+		Page<Post> paging = this.postService.getList(page, kw, "쇼핑경비환전");
 		model.addAttribute("paging", paging);
 		model.addAttribute("kw", kw);
 		return "post_list_expenses";
 	}
 
-	// info list
-	@GetMapping("post/list/info")
+	@GetMapping("/post/list/info")
 	public String infoList(Model model, @RequestParam(value = "page", defaultValue = "0") int page,
 			@RequestParam(value = "kw", defaultValue = "") String kw) {
-		Page<Post> paging = this.postService.getList(page, kw, "기타정보");
+		Page<Post> paging = this.postService.getList(page, kw, "기타여행정보");
 		model.addAttribute("paging", paging);
 		model.addAttribute("kw", kw);
 		return "post_list_info";
 	}
 
-	// hotel list
-	@GetMapping("post/list/hotel")
+	@GetMapping("/post/list/hotel")
 	public String hotelList(Model model, @RequestParam(value = "page", defaultValue = "0") int page,
 			@RequestParam(value = "kw", defaultValue = "") String kw) {
 		Page<Post> paging = this.postService.getList(page, kw, "숙소");
@@ -114,17 +116,59 @@ public class PostController {
 		model.addAttribute("kw", kw);
 		return "post_list_hotel";
 	}
+	
+	@PreAuthorize("isAuthenticated()")
+	@GetMapping("post/list/byPost/{id}")
+	public String personalListByPost(Model model, @PathVariable Long id,
+			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "") String kw,
+			Principal principal) {
+
+		SiteUser siteUser = userService.getUser(principal.getName());
+
+		if (siteUser.getId() != id) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "조회 권한이 없습니다.");
+		}
+
+		Page<Post> paging = postService.getPersonalPostListByPostAuthorId(page, kw, id);
+		model.addAttribute("user", siteUser);
+		model.addAttribute("paging", paging);
+		// 동일한 템플릿 사용 -> 총 답변수로 표기하기 위함
+		model.addAttribute("type", "총 질문수");
+		return "mypage";
+	}
 
 	@PreAuthorize("isAuthenticated()")
-	@GetMapping("post/create")
+	@GetMapping("post/list/byAnswer/{id}")
+	public String personalListByAnswer(Model model, @PathVariable Long id,
+			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "") String kw,
+			Principal principal) {
+		SiteUser siteUser = userService.getUser(principal.getName());
+
+		if (siteUser.getId() != id) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "조회 권한이 없습니다.");
+		}
+
+		// 총 답변 수 View에 나타내기 위함
+		Long answerCount = answerService.getAnswerCount(siteUser);
+		model.addAttribute("answerCount", answerCount);
+
+		Page<Post> paging = postService.getPersonalPostListByAnswer_AuthorId(page, kw, id);
+		model.addAttribute("user", siteUser);
+		model.addAttribute("paging", paging);
+		// 동일한 템플릿 사용 -> 총 답변수로 표기하기 위함
+		model.addAttribute("type", "총 답변수");
+		return "mypage";
+	}
+
+	@PreAuthorize("isAuthenticated()")
+	@GetMapping("/post/create")
 	public String postCreate(Model model, PostForm questionForm) {
 		model.addAttribute("categoryList", categoryService.getList());
 		return "post_form";
 	}
 
-	// 카테고리이름으로 카테고리엔티티조회, 조회한카테고리엔티티를 질문 엔티티에 넣는다
 	@PreAuthorize("isAuthenticated()")
-	@PostMapping("post/create")
+	@PostMapping("/post/create")
 	public String createPost(Model model, @Valid PostForm postForm, BindingResult bindingResult, Principal principal) {
 		if (bindingResult.hasErrors()) {
 			model.addAttribute("categoryList", categoryService.getList());
@@ -137,7 +181,7 @@ public class PostController {
 	}
 
 	@PreAuthorize("isAuthenticated()")
-	@GetMapping("post/modify/{id}")
+	@GetMapping("/post/modify/{id}")
 	public String postModify(PostForm postForm, @PathVariable("id") Integer id, Principal principal) {
 		Post post = this.postService.getPost(id);
 		if (!post.getAuthor().getUsername().equals(principal.getName())) {
@@ -150,7 +194,7 @@ public class PostController {
 	}
 
 	@PreAuthorize("isAuthenticated()")
-	@PostMapping("post/modify/{id}")
+	@PostMapping("/post/modify/{id}")
 	public String postModify(@Valid PostForm postForm, BindingResult bindingResult, Principal principal,
 			@PathVariable("id") Integer id) {
 		if (bindingResult.hasErrors()) {
@@ -165,18 +209,18 @@ public class PostController {
 	}
 
 	@PreAuthorize("isAuthenticated()")
-	@GetMapping("post/delete/{id}")
-	public String postDelete(Principal principal, @PathVariable("id") Integer id) {
-		Post question = this.postService.getPost(id);
-		if (!question.getAuthor().getUsername().equals(principal.getName())) {
+	@GetMapping("/post/delete/{id}")
+	public String questionDelete(Principal principal, @PathVariable("id") Integer id) {
+		Post post = this.postService.getPost(id);
+		if (!post.getAuthor().getUsername().equals(principal.getName())) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "삭제 권한이 없습니다.");
 		}
-		this.postService.delete(question);
-		return "rediect:/";
+		this.postService.delete(post);
+		return "redirect:/";
 	}
 
 	@PreAuthorize("isAuthenticated()")
-	@GetMapping("post/vote/{id}")
+	@GetMapping("/post/vote/{id}")
 	public String postVote(Principal principal, @PathVariable("id") Integer id) {
 		Post post = this.postService.getPost(id);
 		SiteUser siteUser = this.userService.getUser(principal.getName());
