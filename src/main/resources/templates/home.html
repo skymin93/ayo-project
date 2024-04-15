@@ -310,7 +310,6 @@ function filterCities() {
     	var texts = container.getElementsByClassName("cityText");
     	var foundMatch = false;
 
-    	// Loop through all images
     	for (var i = 0; i < images.length; i++) {
         	var image = images[i];
         	var cityName1 = image.getAttribute("data-cityName1") || "";
@@ -320,19 +319,16 @@ function filterCities() {
 
         // Check if the entered city name matches the city name or nation of the current image
         if (upperCaseCityName1.includes(input) || upperCaseCityName3.includes(input)) {
-            // Show the matched image
             image.classList.add("matched"); // Add a class to the matched images
             image.style.display = "inline-block"; // Set display property to inline-block
             foundMatch = true;
 
         } else {
-            // Hide unmatched images and remove the "matched" class
             image.style.display = "none";
             image.classList.remove("matched");
         }
     }
-    
-    	// Loop through associated text and show/hide based on the matched image
+
     	for (var j = 0; j < texts.length; j++) {
         	var text = texts[j];
        		var associatedImageId = text.getAttribute("data-id");
@@ -363,8 +359,8 @@ function filterCities() {
     	modal.style.display = "block";
     	modalImg.src = img.getElementsByTagName("image")[0].getAttribute("xlink:href");
     	document.getElementById("cityName1").innerHTML = cityName1;
-    	document.getElementById("cityName2").innerHTML = cityName2; // Display Korean city name in the modal
-		document.getElementById("cityInfo").innerHTML = cityInfo; // Display city information in the modal
+    	document.getElementById("cityName2").innerHTML = cityName2;
+		document.getElementById("cityInfo").innerHTML = cityInfo;
 }
 
     // Function to close the modal
