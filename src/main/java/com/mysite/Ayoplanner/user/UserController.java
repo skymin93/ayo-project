@@ -1,6 +1,7 @@
 package com.mysite.Ayoplanner.user;
 
 import java.security.Principal;
+import java.util.List;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -9,16 +10,18 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.mysite.Ayoplanner.community.answer.Answer;
 import com.mysite.Ayoplanner.community.answer.AnswerService;
-import com.mysite.Ayoplanner.community.comment.CommentService;
+import com.mysite.Ayoplanner.community.post.Post;
 import com.mysite.Ayoplanner.community.post.PostService;
 import com.mysite.Ayoplanner.exception.DataNotFoundException;
 import com.mysite.Ayoplanner.exception.EmailException;
-import com.mysite.Ayoplanner.user.TempPasswordForm;
 import com.mysite.Ayoplanner.snslogin.PrincipalDetails;
 
 import jakarta.transaction.Transactional;
@@ -30,149 +33,166 @@ import lombok.RequiredArgsConstructor;
 public class UserController {
 
 	private final PostService postService;
-    private final UserService userService;
-    private final AnswerService answerService;
-    private final CommentService commentService;
-    private final UserRepository userRepository;
-    
-	@GetMapping("/signup")
+	private final AnswerService answerService;
+	private final UserService userService;
+	private final UserRepository userRepository;
+
 	public String signup(UserCreateForm userCreateForm) {
 		return "signup_form";
 	}
-	
+
 	@PostMapping("/signup")
-	public String signup(@Valid UserCreateForm userCreateForm, BindingResult bindingResult)
-	{
-		if (bindingResult.hasErrors())
-		{
+	public String signup(@Valid UserCreateForm userCreateForm, BindingResult bindingResult) {
+		if (bindingResult.hasErrors()) {
 			System.out.println("입력값 검증 중 에러 발생");
 			return "signup_form";
 		}
-		if (!userCreateForm.getPassword1().equals(userCreateForm.getPassword2()))
-		{
+		if (!userCreateForm.getPassword1().equals(userCreateForm.getPassword2())) {
 			bindingResult.rejectValue("password2", "passwordInCorrect", "2개의 비밀번호가 일치하지 않습니다");
 			return "signup_form";
 		}
-		try
-		{
+		try {
 			userService.create(userCreateForm.getEmail(), userCreateForm.getUsername(), userCreateForm.getPassword1());
-		} catch (DataIntegrityViolationException e)
-		{
+		} catch (DataIntegrityViolationException e) {
 			e.printStackTrace();
 			bindingResult.reject("signupFailed", "이미 등록된 사용자입니다");
 			return "signup_form";
-		} catch (Exception e)
-		{
+		} catch (Exception e) {
 			e.printStackTrace();
 			bindingResult.reject("signupFailed", e.getMessage());
 			return "signup_form";
 		}
 		return "redirect:/";
 	}
-	
+
 	@GetMapping("/login")
-	public String login(){
+	public String login() {
 		return "login_form";
 	}
-	
+
 	@GetMapping("/tempPassword")
 	public String tempPassword(TempPasswordForm tempPasswordForm) {
-	return "TempPasswordForm";
+		return "TempPasswordForm";
 	}
 
 	@PostMapping("/tempPassword")
-	public String sendTempPassword(@Valid TempPasswordForm tempPasswordForm,
-	    BindingResult bindingResult) {
-	    if (bindingResult.hasErrors()) {
-	       return "TempPasswordForm";
-	    }
-	    try {
-	    	userService.modifyPassword(tempPasswordForm.getEmail());
-	    }catch (DataNotFoundException e) {
-	    	e.printStackTrace();
-	    	bindingResult.reject("emailNotFound", e.getMessage());//이메일이db에없음
-	    	return "TempPasswordForm";
-	    }catch (EmailException e) {
-	    	e.printStackTrace();
-	    	bindingResult.reject("sendEmailFail", e.getMessage());//이메일전송실패
-	    	return "TempPasswordForm";
-	    }
-	    return "redirect:/";
+	public String sendTempPassword(@Valid TempPasswordForm tempPasswordForm, BindingResult bindingResult) {
+		if (bindingResult.hasErrors()) {
+			return "TempPasswordForm";
+		}
+		try {
+			userService.modifyPassword(tempPasswordForm.getEmail());
+		} catch (DataNotFoundException e) {
+			e.printStackTrace();
+			bindingResult.reject("emailNotFound", e.getMessage());// 이메일이db에없음
+			return "TempPasswordForm";
+		} catch (EmailException e) {
+			e.printStackTrace();
+			bindingResult.reject("sendEmailFail", e.getMessage());// 이메일전송실패
+			return "TempPasswordForm";
+		}
+		return "redirect:/";
+	}
+
+	@GetMapping("/mypage")
+	@PreAuthorize("isAuthenticated()")
+	public String showmyPage(Model model, Principal principal) {
+		SiteUser user = userService.getUser(principal.getName());
+
+		Long postCount = postService.getPostCount(user);
+		model.addAttribute("postCount", postCount);
+
+		List<Post> postList = postService.getPostTop5LatestByUser(user);
+		model.addAttribute("postList", postList);
+
+		Long answerCount = answerService.getAnswerCount(user);
+		model.addAttribute("answerCount", answerCount);
+
+		List<Answer> answerList = answerService.getAnswerTop5LatestByUser(user);
+		model.addAttribute("answerList", answerList);
+
+		return "mypage";
 	}
 	
-		@PreAuthorize("isAuthenticated()") //ok
-		@GetMapping("/mypage")
-		public String profile(Model model,
-		        @AuthenticationPrincipal PrincipalDetails principal) {
-		        String username = principal.getUsername();
-		        model.addAttribute("username", username);
-		        model.addAttribute("postList",
-		            postService.getCurrentListByUser(username, 10));
-		        model.addAttribute("answerList",
-		            answerService.getCurrentListByUser(username, 10));
-		        model.addAttribute("commentList",
-		            commentService.getCurrentListByUser(username, 10));
-		        return "mypage";
-		    }
-	
-		@GetMapping("/mypage/checkPwdForm")
-		public String checkPwdView() {
-			return "checkPwdForm";
-		}
-		
-		@GetMapping("mypage/checkPwd")
-		@ResponseBody
-		public boolean checkPassword(@AuthenticationPrincipal PrincipalDetails principal,
-	           @RequestParam("checkPassword") String checkPassword, Model model){
-		
-			String userName = principal.getUsername();
-			SiteUser checkName = userRepository.findByUsername(userName);
-				
-			System.out.println(checkName.getPassword());
-			return userService.checkPassword(checkName, checkPassword);
-		}
-		
-		/*@PreAuthorize("isAuthenticated()")
-		@GetMapping("/mypage/profile")
-		public String modifyInfo(@AuthenticationPrincipal PrincipalDetails principal) {
-			return "mypage_profile";
-		}*/
-		
-		@PreAuthorize("isAuthenticated()")
-		@GetMapping("/mypage/profile") //userService에 있는 getUser를 이용하여 현재 로그인 되어있는 사용자의 정보를 가져온다
-		public String modifyInfo(Principal principal, Model model) {
-			String username = principal.getName();
-			SiteUser siteUser = userRepository.findByUsername(username);
-			model.addAttribute("siteUser", siteUser);
-			return "mypage_profile";
-		}
+	@GetMapping("/mypage/checkPwdForm")
+	public String checkPwdView() {
+		return "checkPwdForm";
+	}
+
+	@GetMapping("mypage/checkPwd")
+	@ResponseBody
+	public boolean checkPassword(@AuthenticationPrincipal PrincipalDetails principal,
+			@RequestParam("checkPassword") String checkPassword, Model model) {
+
+		String userName = principal.getUsername();
+		SiteUser checkName = userRepository.findByUsername(userName);
+
+		System.out.println(checkName.getPassword());
+		return userService.checkPassword(checkName, checkPassword);
+	}
+
+	@PreAuthorize("isAuthenticated()")
+	@GetMapping("/mypage/profile")
+	public String modifyInfo(Principal principal, Model model) {
+		String username = principal.getName();
+		SiteUser siteUser = userRepository.findByUsername(username);
+		model.addAttribute("siteUser", siteUser);
+		return "mypage_profile";
+	}
 
 	@PreAuthorize("isAuthenticated()")
 	@PostMapping("/mypage/profile")
 	@Transactional
-	    public String modifyInfo(@Valid UserModifyForm userModifyForm, Model model) {
-			model.addAttribute("user", userModifyForm);
-			userService.modifyUser(userModifyForm);
-			return "redirect:/mypage";
+	public String changeUsername(Principal principal, @RequestParam("newUsername") String newUsername) {
+		String username = principal.getName();
+		userService.changeUsername(username, newUsername);
+		return "redirect:/mypage";
 	}
-	
+
+	@PreAuthorize("isAuthenticated()")
+	@GetMapping("/mypage/changePassword")
+	public String changePasswordForm(Model model) {
+		model.addAttribute("passwordChangeForm", new MyPageChangePasswordForm());
+		return "mypage_changePassword";
+	}
+
+	@PreAuthorize("isAuthenticated()")
+	@PostMapping("/mypage/changePassword")
+	@Transactional
+	public String changePassword(
+			@ModelAttribute("passwordChangeForm") @Valid MyPageChangePasswordForm passwordChangeForm,
+			BindingResult bindingResult, Principal principal, RedirectAttributes attributes) {
+		if (bindingResult.hasErrors()) {
+			System.out.println("입력값 검증 중 에러 발생");
+			return "mypage_changePassword_form";
+		}
+
+		String username = principal.getName();
+		userService.changePassword(username, passwordChangeForm.getCurrentPassword(),
+				passwordChangeForm.getNewPassword());
+		attributes.addFlashAttribute("message", "패스워드를 변경했습니다.");
+		return "redirect:/mypage";
+	}
+
 	@PreAuthorize("isAuthenticated()")
 	@GetMapping("/mypage/deleteUser")
-	public String userDelete(UserDeleteForm userDeleteForm, Model model, Principal principal) {
-		SiteUser siteUser = this.userService.getUser(principal.getName());
-		model.addAttribute("siteUser", siteUser);
+	public String deleteUser(Model model) {
+		model.addAttribute("userDeleteForm", new UserDeleteForm());
 		return "mypage_deleteUser";
 	}
-	
-	/*@PreAuthorize("isAuthenticated()")
-	@GetMapping("mypage/deleteUser/{id}")
-    public String deleteUser(Principal principal, @PathVariable String password) {
-        SiteUser user = this.userService.getPassword(password);
-        if(!user.getPassword().equals(principal.getName())) {
-        	throw new
-        	ResponseStatusException(HttpStatus.BAD_REQUEST,"삭제 권한이 없습니다.");
-        }
-	this.userService.deleteUser(user);
+
+	@PreAuthorize("isAuthenticated()")
+	@PostMapping("/mypage/deleteUser")
+	public String deleteUser(@ModelAttribute("userDeleteForm") @Valid UserDeleteForm userDeleteForm,
+			BindingResult bindingResult, Principal principal, RedirectAttributes redirectAttributes) {
+		if (bindingResult.hasErrors()) {
+			System.out.println("입력값 검증 중 에러 발생");
+			return "mypage_deleteUser";
+		}
+
+		String username = principal.getName();
+		userService.deleteUser(username);
+		redirectAttributes.addFlashAttribute("message", "회원 탈퇴되었습니다.");
 		return "redirect:/";
-	}*/
+	}
 }
