@@ -1,0 +1,39 @@
+<html layout:decorate="~{layout}">
+<div layout:fragment="content" class="container my-3">
+	<link rel="stylesheet" type="text/css" th:href="@{/style.css}">
+    <form th:action="@{/signup}" th:object="${userCreateForm}" method="post">
+        <div class="signup-container">
+			<div>
+				<h3>AyoPlanner</h3>
+				<p>여행 스케줄링 플래너, 에이요플래너</p>
+				<br></br>
+				<p class="leftStart-text" style="margin-left:30px; margin-right:30px; margin-bottom:20px;"><b>회원 가입을 위한 정보를 입력해주세요.</b></p>				
+			</div>
+			<div th:replace="~{form_errors :: formErrorsFragment}">
+			</div>
+        	<div class="leftStart-text" style="margin-bottom:20px;">
+            	<label for="email" class="form-label"><b>이메일</b></label>
+            	<input type="email" th:field="*{email}" placeholder="이메일 주소" class="form-control">
+        	</div>
+        	<div class="leftStart-text" style="margin-bottom:20px;">
+            	<label for="username" class="form-label"><b>닉네임</b></label>
+            	<input type="text" th:field="*{username}" class="form-control">
+        	</div>
+        	<div class="leftStart-text" style="margin-bottom:20px;">
+            	<label for="password1" class="form-label"><b>비밀번호</b></label>
+            	<input type="password" th:field="*{password1}" placeholder="영문,숫자,특수문자 포함 8자리 이상" class="form-control">
+        	</div>
+        	<div class="leftStart-text">
+            	<label for="password2" class="form-label"><b>비밀번호 확인</b></label>
+            	<input type="password" th:field="*{password2}" class="form-control">
+        	</div>
+        	<div>
+        		<button type="submit" class="custom-btn-common">회원가입</button>
+        	</div>
+        	<div>
+				<a th:href="@{/login}" class="blue-text">로그인화면가기</a>
+        	</div>
+    	</div>
+    </form>
+</div>
+</html>
