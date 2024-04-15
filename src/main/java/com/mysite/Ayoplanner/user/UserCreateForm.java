@@ -15,7 +15,7 @@ public class UserCreateForm {
 	@NotBlank(message = "이메일은 필수 입력 값입니다.")
 	private String email;
 	
-	@Size(min = 3, max = 25)//username은 입력받는 데이터의 길이가 3~25사이여야 한다는 검증조건 설정
+	@Size(min = 3, max = 25)
 	@NotEmpty(message = "사용자 닉네임은 필수 항목입니다.")
 	private String username;
 	
