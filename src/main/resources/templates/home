@@ -320,7 +320,7 @@
         if (upperCaseCityName1.includes(input) || upperCaseCityName3.includes(input)) {
             // Show the matched image
             image.classList.add("matched"); // Add a class to the matched images
-            image.style.display = "inline-block"; // Set display property to inline-block
+            image.style.display = "inline-block";
             foundMatch = true;
 
         } else {
@@ -353,12 +353,12 @@
     	var modalImg = document.getElementById("modalImg");
     	var cityName1 = img.getAttribute("data-cityName1") || "";
     	var cityName2 = img.getAttribute("data-cityName2") || "";
-    	var cityInfo = img.getAttribute("data-cityInfo") || ""; // Ensure cityInfo is retrieved
+    	var cityInfo = img.getAttribute("data-cityInfo") || "";
     	modal.style.display = "block";
     	modalImg.src = img.getElementsByTagName("image")[0].getAttribute("xlink:href");
     	document.getElementById("cityName1").innerHTML = cityName1;
-    	document.getElementById("cityName2").innerHTML = cityName2; // Display Korean city name in the modal
-		document.getElementById("cityInfo").innerHTML = cityInfo; // Display city information in the modal
+    	document.getElementById("cityName2").innerHTML = cityName2;
+		document.getElementById("cityInfo").innerHTML = cityInfo;
 }
 
     function closeModal() {
