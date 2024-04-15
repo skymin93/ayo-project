@@ -4,7 +4,8 @@ import java.time.LocalDateTime;
 
 import org.springframework.data.annotation.CreatedDate;
 
-import com.mysite.Ayoplanner.howtouses.inquiry.Inquiry;
+import com.mysite.Ayoplanner.admin.Admin;
+import com.mysite.Ayoplanner.howtouses.inquire.Inquire;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -30,5 +31,10 @@ public class AdminAnswer {
 	private LocalDateTime answerCreateDate;
 	
 	@ManyToOne
-	private Inquiry inquiry;	
+	private Inquire inquire;
+	
+	@ManyToOne
+	private Admin author;
+	
+	private LocalDateTime modifyDate;
 }

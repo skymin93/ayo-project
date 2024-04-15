@@ -2,18 +2,10 @@ package com.mysite.Ayoplanner.user;
 
 import java.util.Optional;
 
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.mysite.Ayoplanner.CommonUtil;
-import com.mysite.Ayoplanner.exception.DataNotFoundException;
-import com.mysite.Ayoplanner.exception.EmailException;
-import com.mysite.Ayoplanner.exception.ErrorCode;
-import com.mysite.Ayoplanner.exception.UserDataIntegrityViolationException;
-import com.mysite.Ayoplanner.user.TempPasswordMail;
+import com.mysite.Ayoplanner.DataNotFoundException;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -23,73 +15,57 @@ import lombok.RequiredArgsConstructor;
 public class UserService {
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
-	private final CommonUtil commonUtil;
-	private final TempPasswordMail tempPasswordMail;
 
-    public SiteUser create(String email, String username, String password) {
-        SiteUser user = new SiteUser();
-        user.setEmail(email);
-        user.setUsername(username);
-        user.setPassword(passwordEncoder.encode(password));
-        try {
-            this.userRepository.save(user);
-        } catch (DataIntegrityViolationException e) {
-            throw new UserDataIntegrityViolationException(ErrorCode.SIGN_UP_FAIL);
-        }
-        return user;
-    }
-    
-    public SiteUser getUser(String username) {
-        Optional<SiteUser> siteUser =
-            this.userRepository.findByusername(username);
-        if (siteUser.isPresent()) {
-            return siteUser.get();
-        } else {
-        	throw new DataNotFoundException(ErrorCode.USER_NOT_FOUND_BY_USERNAME);
-        }
-    }
-	
-	@Transactional
-    public void modifyPassword(String email) throws EmailException {
-        String tempPassword = commonUtil.createTempPassword();
-        SiteUser user = userRepository.findByEmail(email)
-            .orElseThrow(() -> new DataNotFoundException(ErrorCode.USER_NOT_FOUND_BY_EMAIL));
-        user.setPassword(passwordEncoder.encode(tempPassword));
-        userRepository.save(user);
-        tempPasswordMail.sendSimpleMessage(email, tempPassword);
-    }
-    
-	@ResponseBody
-	public boolean checkPassword(SiteUser user, String checkPassword) {
-		Optional<SiteUser> findUser = userRepository.findByEmail(user.getEmail());
-		if(findUser == null) {
-		     throw new IllegalStateException("없는 회원입니다.");
-		}
-		String realPassword = user.getPassword();
-		boolean matches = passwordEncoder.matches(checkPassword, realPassword);
-		System.out.println(matches);
-		return matches;
+	public SiteUser create(String username, String password, String email) 
+	{
+		SiteUser user = new SiteUser();
+		user.setUsername(username);
+		user.setEmail(email);
+		user.setPassword(passwordEncoder.encode(password));
+		this.userRepository.save(user);
+		return user;
 	}
 	
-    public Long modifyUser(UserModifyForm userModifyForm) {
-        SiteUser user = userRepository.findByemail(userModifyForm.getEmail());
-        user.updateUsername(userModifyForm.getUsername());
-        user.updatePassword(userModifyForm.getPassword());
+	public SiteUser getUser(String email)
+	{
+		Optional<SiteUser> siteUser = this.userRepository.findByUsername(email);
+		if(siteUser.isPresent())
+		{
+			return siteUser.get();
+		}
+		else
+		{
+			throw new DataNotFoundException("siteuser not found");
+		}
+	}
+    
+	//마이페이지 - 회원 닉네임 수정
+	public SiteUser updateUsername(Long id, String newUsername) {
+		SiteUser user = userRepository.findById(id).orElse(null);
+		if (user != null| user.getUsername()!=newUsername) {
+			user.setUsername(newUsername);
+			return userRepository.save(user);
+		}
+		else
+		{
+			throw new DataNotFoundException("siteuser not found");
+		}
+	}
+	
+	//마이페이지 - 회원 비밀번호 수정
+	@Transactional
+	public void updatePassword(String email, String currentPassword, String newPassword) {
+		SiteUser user = validatePassword(email, currentPassword);
+		user.updatePassword((passwordEncoder.encode(newPassword)));
+//		userService.updatePassword(email, UpdatePasswordForm.getCurrentPassword(), UpdatePasswordForm.getNewPassword());
+	}
 
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        String encodePw = encoder.encode(userModifyForm.getPassword());
-        user.updatePassword(encodePw);
+	private SiteUser validatePassword(String email, String currentPassword) {
+		return null;
+	}
 
-        userRepository.save(user);
-
-        return user.getId();
-    }
-		
+	//마이페이지 - 회원 삭제
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
     }
-
-
 }
-	
-	

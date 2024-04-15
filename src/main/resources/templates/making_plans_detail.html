@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Place Details</title>
+  <link rel="stylesheet" type="text/css" th:href="@{/bootstrap.min.css}">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+  <style>
+    #map {
+      height: 100%;
+    }
+
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    #modal {
+      display: none;
+      position: fixed;
+      z-index: 1;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgb(0, 0, 0);
+      background-color: rgba(0, 0, 0, 0.4);
+      padding-top: 60px;
+    }
+
+    #modal-content {
+      background-color: #fefefe;
+      margin: 5% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+    }
+
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+      color: black;
+      text-decoration: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="d-flex align-items-start">
+    <div class="nav flex-column nav-pills me-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+      <button class="nav-link active" id="v-pills-home-tab" data-bs-toggle="pill" data-bs-target="#v-pills-home"
+        type="button" role="tab" aria-controls="v-pills-home" aria-selected="true">기간설정</button>
+      <button class="nav-link" id="v-pills-profile-tab" data-bs-toggle="pill" data-bs-target="#v-pills-profile"
+        type="button" role="tab" aria-controls="v-pills-profile" aria-selected="true">장소설정</button>
+      <button class="nav-link" id="v-pills-messages-tab" data-bs-toggle="pill" data-bs-target="#v-pills-messages"
+        type="button" role="tab" aria-controls="v-pills-messages" aria-selected="true">숙소설정</button>
+		<button class="nav-link" id="v-pills-stt-tab" data-bs-toggle="pill" data-bs-target="#v-pills-stt"
+		  type="button" role="tab" aria-controls="v-pills-messages" aria-selected="true">임시일정생성</button>
+      <div style="padding-top: 350px;"></div>
+      <button type="button" class="btn btn-primary">이전</button>
+      <button type="button" class="btn btn-primary">다음</button>
+    </div>
+    <div class="tab-content" id="v-pills-tabContent" style="display: flex;">
+      <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab"
+        tabindex="0">
+        <div style="display: flex;">
+          <div style="flex: 1; height: 600px; overflow-y: auto">
+            <h1 th:text="${cityInfo.cityName}"></h1>
+            <div>
+              <input type="date" id="start_date" value="여행 시작">
+              <input type="date" id="end_date" value="여행 종료">
+            </div>
+            <div style="padding-top: 10px; padding-bottom: 10px;"></div>
+            <div>
+              <input type="button" class="airport-button" value="항공권">
+            </div>
+            <div>
+              <h4 id="total_time"></h4>
+              <p>입력하신 여행 기간이 시차를 고려한 현지 여행 기간(여행지 도착 날짜, 여행지 출발 날짜)이 맞는지 확인해 주시고 각 날짜의 일정 시작시간과 종료시간을 현지 시간 기준으로 설정해
+                주세요. 기본 설정시간은 오전10부터 오후 10시입니다.</p>
+              <table class="table" id="schedule_table">
+                <thead>
+                  <tr>
+                    <th>일자</th>
+                    <th>요일</th>
+                    <th>시작시간</th>
+                    <th>종료시간</th>
+                  </tr>
+                </thead>
+                <tbody>
+                </tbody>
+              </table>
+              <input type="button" class="button-time" value="시간설정완료">
+            </div>
+          </div>
+          <div style="flex: 1;">
+            <div id="map" style="height: 600px;"></div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab" tabindex="1">
+		<div style="display: flex;">
+			<div style="flex: 1; width: 330px; padding: 10px; height: 600px; overflow-y: auto;">
+				<h2 th:text="${cityInfo.cityName}"></h2>
+				<p id="date_output1"></p>
+				<input type="search" placeholder="장소를 입력하세요">
+				<input type="button" value="찾기">
+				<div class="list-group" style="padding-top: 10px;">
+					<div class="flex items-center w-full gap-2 px-2 py-2 md:px-3">
+						<button class="flex items-center justify-center px-2 py-0.5 text-xs md:text-sm rounded border border-gray-500 text-gray-500">명소<i class="ml-1 fa-solid fa-check hidden"></i></button>
+						<button class="flex items-center justify-center px-2 py-0.5 text-xs md:text-sm rounded border border-gray-500 text-gray-500">식당<i class="ml-1 fa-solid fa-check hidden"></i></button>
+						<button class="flex items-center justify-center px-2 py-0.5 text-xs md:text-sm rounded border border-gray-500 text-gray-500">카페<i class="ml-1 fa-solid fa-check hidden"></i></button>
+					</div>
+					<div>
+						<button type="button" class="list-group-item list-group-item-action" onclick="openModal()"
+						th:each="siteInfo : ${cityInfo.siteInfoList}">
+						<p th:text="${siteInfo.placeId}" class="place-id" style="display: none;"></p>
+						</button>
+				    </div>
+				</div>
+			</div>
+			<div style="flex: 1; width: 330px; padding: 10px;">
+						
+			</div>
+			<div style="flex: 1;">
+				<div id="map1" style="height: 600px; width: 650px;"></div>
+			</div>
+		</div>
+				
+		<!-- Modal -->
+		<div id="modal">
+			<div id="modal-content">
+				<span class="close" onclick="closeModal()">&times;</span>
+				<div style="display: flex;">
+					<div style="flex: 1;">
+						<h2 id="modal-name"></h2>
+						<p id="modal-address"></p>
+						<p id="modal_formatted_phone_number"></p>
+						<p id="modal-opening-hours"></p>
+					</div>
+					<div style="flex: 1; padding-top: 100px;">
+						<img id="modal-image" src="" alt="Place Image">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tab-pane fade" id="v-pills-messages" role="tabpanel" aria-labelledby="v-pills-messages-tab" tabindex="2">
+		<h2 th:text="${cityInfo.cityName}"></h2>
+		<p id="date_output2"></p>
+		<input type="search" placeholder="장소를 입력하세요">
+		<input type="button" value="찾기">
+		<div class="list-group" style="padding-top: 10px;">
+			<button type="button" class="list-group-item list-group-item-action">
+			</button>
+		</div>
+		<div>
+			
+		</div>
+		<div>
+			<div id="map" style="height: 600px; width: 650px;"></div>
+		</div>
+	  </div>
+  </div>
+</div>
+  <script>
+    const DAYNAMES = ['일', '월', '화', '수', '목', '금', '토'];
+    const START_TIME_DEFAULT = '10:00';
+    const END_TIME_DEFAULT = '22:00';
+
+    // JavaScript로 동적으로 테이블 행(tr)을 생성하는 함수
+    // 서버에 데이터를 저장한 경우, argument로 넘겨 준다.
+    function generateTableRows(startDateDefault = undefined, endDateDefault = undefined, dateMap = {}) {
+      const startDateInput = document.getElementById('start_date');
+      const endDateInput = document.getElementById('end_date');
+
+      if (startDateDefault && endDateDefault) {
+        startDateInput.value = startDateDefault; // yyyy-mm-dd
+        endDateInput.value = endDateDefault;
+      }
+
+      let startDate = new Date(startDateInput.value); // 여행 시작일
+      let endDate = new Date(endDateInput.value); // 여행 종료일
+	  const tbody = document.querySelector('#schedule_table tbody');
+	  
+	  tbody.innerHTML = ''; // 기존 내용 초기화
+	  
+	  function formatDate(date) {
+	              const year = date.getFullYear();
+	              const month = String(date.getMonth() + 1).padStart(2, '0');
+	              const day = String(date.getDate()).padStart(2, '0');
+	              return `${year}-${month}-${day}`;
+	          }
+	  
+	          // HTML에 변수 값 출력
+	          document.getElementById('date_output1').innerHTML = "여행 기간: " + formatDate(startDate) + " ~ " + formatDate(endDate);
+			  document.getElementById('date_output2').innerHTML = "여행 기간: " + formatDate(startDate) + " ~ " + formatDate(endDate);
+	
+
+      const updateTotalHours = (map) => {
+        console.log(map);
+        let totalTime = Math.round(
+          Object.values(map).reduce((a, b) => {
+            return a + HHMMToHour(b[1]) - HHMMToHour(b[0]);
+          }, 0)
+        );
+
+        // 총 여행 시간을 출력합니다.
+        document.getElementById('total_time').textContent = '총 여행 시간은 ' + totalTime + '시간입니다.';
+      };
+
+      // startDate부터 endDate까지의 모든 날짜에 대해 테이블 행을 생성합니다.
+      for (let date = new Date(startDate); date <= endDate; date.setDate(date.getDate() + 1)) {
+        let row = createTableRow(date, dateMap, updateTotalHours);
+        tbody.appendChild(row);
+      }
+
+      updateTotalHours(dateMap);
+    }
+
+    // Date 객체를 받아서 테이블 행을 생성하는 함수
+    function createTableRow(date, map, callback) {
+      const DATE_MAP_KEY = dateToYYMMDD(date);
+      if (!map[DATE_MAP_KEY]) {
+        map[DATE_MAP_KEY] = [START_TIME_DEFAULT, END_TIME_DEFAULT];
+      }
+      // closure 활용
+      let [startTime, endTime] = map[DATE_MAP_KEY];
+
+      const row = document.createElement('tr');
+      const dayName = DAYNAMES[date.getDay()];
+      const dateStr = date.getMonth() + 1 + '/' + date.getDate();
+
+      const startTimeInput = document.createElement('input');
+      startTimeInput.type = 'time';
+      startTimeInput.value = startTime;
+
+      const endTimeInput = document.createElement('input');
+      endTimeInput.type = 'time';
+      endTimeInput.value = endTime;
+
+      row.append(createTableData(dayName));
+      row.append(createTableData(dateStr));
+      row.append(createTableData(startTimeInput));
+      row.append(createTableData(endTimeInput));
+
+      startTimeInput.addEventListener('change', (e) => {
+        if (HHMMToHour(e.target.value) > HHMMToHour(endTime)) {
+          e.target.value = startTime;
+          alert('startTime > endTime');
+          return;
+        }
+        map[DATE_MAP_KEY][0] = startTime = e.target.value;
+        callback(map);
+      });
+
+      endTimeInput.addEventListener('change', (e) => {
+        if (HHMMToHour(startTime) > HHMMToHour(e.target.value)) {
+          e.target.value = endTime;
+          alert('startTime > endTime');
+          return;
+        }
+        map[DATE_MAP_KEY][1] = endTime = e.target.value;
+        callback(map);
+      });
+
+      return row;
+    }
+
+    function createTableData(content) {
+      const td = document.createElement('td');
+      td.append(content);
+      return td;
+    }
+
+    // map KEY format
+    function dateToYYMMDD(date) {
+      return `${date.getUTCFullYear()}${(date.getUTCMonth() + 1).toString().padStart(2, '0')}${date
+        .getUTCDay()
+        .toString()
+        .padStart(2, '0')}`;
+    }
+
+    function HHMMToHour(hhmm) {
+      let [hour, minute] = hhmm.split(':').map(Number);
+      return parseInt(hour) + parseInt(minute) / 60;
+    }
+
+    // 여행 시간을 계산하는 함수
+    function calculateTravelTime(startTime, endTime) {
+      // startTime과 endTime의 형식은 "HH:MM"입니다.
+      // 여기서는 단순히 시간만 계산하여 반환합니다.
+      let [startHour, startMinute] = startTime.split(':').map(Number);
+      let [endHour, endMinute] = endTime.split(':').map(Number);
+
+      startHour = isNaN(startHour) ? 0 : startHour;
+      startMinute = isNaN(startMinute) ? 0 : startMinute;
+      endHour = isNaN(endHour) ? 0 : endHour;
+      endMinute = isNaN(endMinute) ? 0 : endMinute;
+
+      let totalHours = endHour - startHour;
+      let totalMinutes = endMinute - startMinute;
+
+      if (totalMinutes < 0) {
+        totalHours--;
+        totalMinutes += 60;
+      }
+
+      return totalHours + totalMinutes / 60;
+    }
+
+    // 페이지 로드 시 테이블 행을 생성합니다.
+    generateTableRows();
+    // generateTableRows('2024-04-01', '2024-04-02', { 20240401: ['10:00', '21:00'] });
+
+    // 여행 시작일 또는 종료일이 변경되었을 때 테이블 행을 다시 생성합니다.
+    document.getElementById('start_date').addEventListener('change', generateTableRows);
+    document.getElementById('end_date').addEventListener('change', generateTableRows);
+  </script>
+  <script>
+	
+	//지도 스타일
+    class CoordMapType {
+      tileSize;
+      alt = null;
+      maxZoom = 17;
+      minZoom = 0;
+      name = null;
+      projection = null;
+      radius = 6378137;
+      constructor(tileSize) {
+        this.tileSize = tileSize;
+      }
+      getTile(coord, zoom, ownerDocument) {
+        const div = ownerDocument.createElement("div");
+  
+        div.innerHTML = String(coord);
+        div.style.width = this.tileSize.width + "px";
+        div.style.height = this.tileSize.height + "px";
+        div.style.fontSize = "10";
+        div.style.borderStyle = "solid";
+        div.style.borderWidth = "1px";
+        div.style.borderColor = "#AAAAAA";
+        return div;
+      }
+      releaseTile(tile) { }
+    }
+  
+    //step1 지도
+  
+    function init_firstMap() {
+      const map = new google.maps.Map(document.getElementById("map"), {
+        center: { lat: [[${ cityInfo.latitude }]], lng: [[${ cityInfo.longitude }]] },
+        zoom: 13,
+      });
+  
+      const coordMapType = new CoordMapType(new google.maps.Size(256, 256));
+  
+      map.overlayMapTypes.insertAt(0, coordMapType)
+  
+  
+    };
+  
+    //step2 지도
+  
+    function init_secondMap() {
+      const map = new google.maps.Map(document.getElementById("map1"), {
+        center: { lat: [[${ cityInfo.latitude }]], lng: [[${ cityInfo.longitude }]] },
+        zoom: 13,
+      });
+  
+      const coordMapType = new CoordMapType(new google.maps.Size(256, 256));
+  
+      map.overlayMapTypes.insertAt(0, coordMapType);
+	  
+	  };
+	  
+	  
+	  function initMap() {
+	    init_firstMap();
+	    init_secondMap();
+	  }
+	  
+	
+	// 장소 정보를 가져와서 모달에 표시하는 함수
+	function showPlaceDetails(placeId) {
+	    // Google 장소 API의 Place Details 요청을 생성합니다.
+	    const request = {
+	        placeId: placeId,
+	        fields: ["name", "formatted_address", "formatted_phone_number", "geometry", "opening_hours", "photos"],
+	    };
+	
+	    // Google 장소 서비스를 생성합니다. 이 때 map 객체를 전달합니다.
+	    const service = new google.maps.places.PlacesService(document.createElement("div"));
+	
+	    // Place Details 요청을 보냅니다.
+	    service.getDetails(request, (place, status) => {
+	        if (
+	            status === google.maps.places.PlacesServiceStatus.OK &&
+	            place &&
+	            place.geometry &&
+	            place.geometry.location
+	        ) {
+	            // 장소 정보를 가져온 후 처리하는 코드를 여기에 작성합니다.
+	            document.getElementById("modal-name").textContent = place.name;
+	            document.getElementById("modal-address").textContent = "주소 : " + place.formatted_address;
+	            document.getElementById("modal-opening-hours").textContent = "영업 시간" + (place.opening_hours ? place.opening_hours.weekday_text.join(", ") : "정보 없음");
+	            if (place.opening_hours && place.opening_hours.weekday_text) {
+	                const weekdayText = place.opening_hours.weekday_text;
+	                const modalOpeningHoursElement = document.getElementById("modal-opening-hours");
+	                modalOpeningHoursElement.textContent = "영업 시간: ";
+	
+	                // 각 요일별로 일렬로 표시
+	                for (let i = 0; i < weekdayText.length; i++) {
+	                    const currentDay = weekdayText[i];
+	                    const dayElement = document.createElement("p");
+	                    dayElement.textContent = currentDay;
+	                    modalOpeningHoursElement.appendChild(dayElement);
+	                }
+	            } else {
+	                // 영업 시간 정보가 없는 경우
+	                document.getElementById("modal-opening-hours").textContent = "영업 시간: 정보 없음";
+	            }
+	            document.getElementById("modal_formatted_phone_number").textContent = "연락처 : " + place.formatted_phone_number;
+	
+	            if (place.photos && place.photos.length > 0) {
+	                const photoUrl = place.photos[0].getUrl({ maxWidth: 400 });
+	                console.log(`photoUrl : ${photoUrl}`)
+	                document.getElementById("modal-image").src = photoUrl;
+	            } else {
+	                document.getElementById("modal-image").src = ""; // 이미지가 없는 경우
+	            }
+	            openModal();
+	        }
+	    });
+	}
+	
+	// 각 버튼에 대한 클릭 이벤트 처리
+	document.querySelectorAll('.list-group-item').forEach(function(button) {
+	    button.addEventListener('click', function() {
+	        // 클릭된 버튼의 텍스트를 가져와서 장소 ID로 사용합니다.
+	        const placeId = this.querySelector('.place-id').textContent;
+	
+	        // 함수를 호출하여 해당 장소의 정보를 표시합니다.
+	        showPlaceDetails(placeId);
+	    });
+	});
+	
+	
+	
+
+	
+	
+    function openModal() {
+      console.log("openModal 호출")
+      document.getElementById("modal").style.display = "block";
+    }
+  
+    function closeModal() {
+      document.getElementById("modal").style.display = "none";
+    }
+  
+  
+  </script>
+  <script th:src="@{/bootstrap.min.js}"></script>
+  <script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCvpRsKrCpaLw6yljJ47XioXyF-PAS9V2o&callback=initMap&libraries=places&v=weekly"
+    defer>
+</script>
+</body>
+</html>

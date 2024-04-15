@@ -8,22 +8,20 @@ import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
 
-@Entity
-@Getter 
+@Getter
 @Setter
+@Entity
 public class Admin {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-
-    @Column(unique = true)
-    private String adminName;
-    
-    private String adminPassword;
-    
-    private String position;
-    
-    @Column(unique = true)
-    private String adminEmail;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+	
+	@Column(unique = true)
+	private String adminEmail;
+	
+	private String adminPassword;
+	
+	private String adminName;
+	
+	private String position;
 }

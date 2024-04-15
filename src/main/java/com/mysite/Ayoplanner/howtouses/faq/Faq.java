@@ -2,11 +2,14 @@ package com.mysite.Ayoplanner.howtouses.faq;
 
 import java.time.LocalDateTime;
 
+import com.mysite.Ayoplanner.admin.Admin;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -25,4 +28,10 @@ public class Faq {
 	private String faqContent;
 	
 	private LocalDateTime faqCreateDate;
+	
+	@ManyToOne
+	private Admin author;
+	
+	private LocalDateTime modifyDate;
 }
+
