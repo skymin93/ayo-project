@@ -13,17 +13,17 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Service
-public class UserSecurityService implements UserDetailsService{
+public class UserSecurityService implements UserDetailsService {
 
-    private final UserRepository userRepository;
+	private final UserRepository userRepository;
 
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Optional<SiteUser> _siteUser = this.userRepository.findByEmail(email);
-        
-        if (_siteUser.isEmpty()) {
-            throw new UsernameNotFoundException("사용자를 찾을수 없습니다.");
-        }
-        SiteUser siteUser = _siteUser.get();
-        return new PrincipalDetails(siteUser);
-    }
+	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+		Optional<SiteUser> _siteUser = this.userRepository.findByEmail(email);
+
+		if (_siteUser.isEmpty()) {
+			throw new UsernameNotFoundException("사용자를 찾을수 없습니다.");
+		}
+		SiteUser siteUser = _siteUser.get();
+		return new PrincipalDetails(siteUser);
+	}
 }
