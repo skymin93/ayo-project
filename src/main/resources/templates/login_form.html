@@ -28,21 +28,21 @@
         	<div class="leftStart-text">
 				<a th:href="@{/signup}" class="blue-text">아직 회원이 아니세요? 이메일회원가입</a>
 			</div>
-			 <!-- kakao button -->
+			
 			<div class="text-center">
-    			<a id="kakao_login_btn">
+			
+			<!-- kakao button -->
+				<a th:href="@{/oauth2/authorization/kakao}" id="kakao_login_btn">
 					<img src="/images/kakao_login_medium_narrow.png">
 				</a>
+			<!-- google button -->
+			
+				<a th:href="@{/oauth2/authorization/google}" id="google_login_btn">
+					<img src="/images/web_light_sq_SI@1x.png">
+				</a>
 			</div>
-		</div>
     </form>
 </div>
 <script layout:fragment="script" type='text/javascript'>
-	
-	const kakao_login_btn = document.getElementById("kakao_login_btn");
-    kakao_login_btn.addEventListener('click', function () {
-        location.href = "/oauth2/authorization/kakao";
-    });
 </script>
-
 </html>
