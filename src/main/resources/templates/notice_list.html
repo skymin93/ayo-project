@@ -1,52 +1,57 @@
 <html layout:decorate="~{layout}">
 <div layout:fragment="content" class="container">
-	<div>
-		<ul class="nav nav-underline">
-		  <li class="nav-item">
-		    <a class="nav-link active" aria-current="page" href="list">공지사항</a>
-		  </li>
-		  <li class="nav-item">
-		    <a class="nav-link" href="/faq/list">자주묻는질문</a>
-		  </li>
-		  <li class="nav-item">
-		    <a class="nav-link" href="/inquire/list">1:1문의</a>
-		  </li>
-		</ul>
-	</div>
-	<div class="row my-3">
-			<div class="col-6">
-				<a th:href="@{/notice/create}" class="btn btn-primary">질문 등록하기</a>
-			</div>
-			<div class="col-6">
-				<div class="input-group">
-					<input type="text" id="search_kw" class="form-control" th:value="${kw}">
-					<button class="btn btn-outline-secondary" type="button" id="btn_search">찾기</button>
-				</div>
+	<link rel="stylesheet" type="text/css" th:href="@{/style.css}">
+	
+		<div class="notice-container">
+			<ul class="category">
+	 			<li class="categorybar">
+	    			<a class="nav-link active" aria-current="page" href="list">공지사항</a>		  		</li>
+		  		</li>
+		  		<li class="categorybar">
+		    		<a class="nav-link" href="/faq/list">자주묻는질문</a>
+		  		</li>
+		  		<li class="categorybar">
+		    		<a class="nav-link" href="/inquire/list">1:1문의</a>
+		  		</li>
+			</ul>
+		
+	<!-- 검색창 -->
+	<div class="container-search">
+		<div class="row my-3">
+			<div class="input-group">
+				<input type="text" id="search_kw" class="form-control" th:value="${kw}">
+				<button class="custom-btn-search" type="button" id="btn_search">찾기</button>
 			</div>
 		</div>
-  <div class="container my-3">
-    <table class="table">
-      <thead class="table-dark">
-        <tr class="text-center">
-          <th>번호</th>
-          <th style="width:50%">제목</th>
-		  <th>글쓴이</th>
-          <th>작성일시</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr class="text-center" th:each="notice, loop : ${paging}">
-          <td th:text="${paging.getTotalElements - (paging.number * paging.size) - loop.index}"></td>
-          <td class="text-start">
-            <a th:href="@{|/notice/detail/${notice.noticeId}|}" th:text="${notice.noticeSubject}"></a>
-          </td>
-		  <td><span th:if="${notice.author != null}" th:text="${notice.author.position}"></span></td>
-          <td th:text="${#temporals.format(notice.noticeCreateDate, 'yyyy-MM-dd HH:mm')}"></td>
-        </tr>
-      </tbody>
-    </table>
+	</div>
+	<form th:action="@{/notice/list}" method="get" id="searchForm">
+		<input type="hidden" id="kw" name="kw" value="${kw}">		
+		<input type="hidden" id="page" name="page" th:value="${paging.number}">		
+	</form>
+		
+	<div class="notice-content">
+    	<table class="table">
+      		<thead class="table-white">
+        		<tr class="text-center">
+          			<th style="width:200px">번호</th>
+          			<th style="width:200px">제목</th>
+		  			<th style="width:200px">글쓴이</th>
+          			<th style="width:200px">작성일시</th>
+        		</tr>
+      		</thead>
+      		<tbody>
+        		<tr class="text-center" th:each="notice, loop : ${paging}">
+          			<td th:text="${paging.getTotalElements - (paging.number * paging.size) - loop.index}"></td>
+          			<td class="text-start">
+            			<a th:href="@{|/notice/detail/${notice.noticeId}|}" th:text="${notice.noticeSubject}"></a>
+          			</td>
+		  			<td><span th:if="${notice.author != null}" th:text="${notice.author.position}"></span></td>
+          			<td th:text="${#temporals.format(notice.noticeCreateDate, 'yyyy-MM-dd HH:mm')}"></td>
+        		</tr>
+      		</tbody>
+    	</table>
+    	
     <!-- 페이징처리 시작 -->
-    <div class="pagination-container" id="notice-pagination">
       <div th:if="${!paging.isEmpty()}">
         <ul class="pagination justify-content-center">
           <li class="page-item" th:classappend="${!paging.hasPrevious} ? 'disabled'">
@@ -68,16 +73,19 @@
             </a>
           </li>
         </ul>
-      </div>
     </div>
     <!-- 페이징처리 끝 -->
   </div>
-  <form th:action="@{/notice/list}" method="get" id="searchForm">
-	<input type="hidden" id="kw" name="kw" value="${kw}">
-	<input type="hidden" id="page" name="page" th:value="${paging.number}">
-  </form>
+  
+	<!-- 글 작성하기 -->
+		<div class="post-button">
+			<a th:href="@{/notice/create}" class="custom-btn-post">질문 등록</a>
+		</div>
+	</div>
 </div>
+
 <script layout:fragment="script" type='text/javascript'>
+	
 	const page_elements = document.getElementsByClassName("page-link");
 	Array.from(page_elements).forEach(function (element) {
 		element.addEventListener('click', function () {
