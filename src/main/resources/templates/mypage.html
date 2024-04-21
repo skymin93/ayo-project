@@ -7,6 +7,7 @@
                 <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
                 <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
             </svg>
+            <p th:text="${user.username}"></p>
             <h5 class="my-3" th:text="${username}"></h5>
             <a th:href="@{/mypage/checkPwdForm}" class="blue-text">
                 <b>프로필 수정</b>
@@ -56,7 +57,7 @@
                                 	<td th:text="${#temporals.format(post.createDate, 'yyyy-MM-dd HH:mm')}" style="min-width:80px; padding: 12px 0;"></td>
                                 	<td th:if="${post.modifyDate == null}"> </td>
                                 	<td th:if="${post.modifyDate != null}" th:text="${#temporals.format(post.modifyDate, 'yyyy-MM-dd HH:mm')}" style="min-width:80px; padding: 12px 0;"></td>
-                                	<td th:text="${post.countview}"></td>
+                                	<td th:text="${post.hit}"></td>
                             	</tr>
                         	</tbody>
                     	</table>
@@ -113,11 +114,24 @@
 
 <script layout:fragment="script" type='text/javascript'>
     
+    document.addEventListener("DOMContentLoaded", function() {
+   
+    // Hide all page content elements except mypageContent1
+    	var mypageContent1 = document.getElementsByClassName("mypageContent1")[0];
+    	var mypageContent2 = document.getElementsByClassName("mypageContent2")[0];
+    	var mypageContent3 = document.getElementsByClassName("mypageContent3")[0];
+    
+    	mypageContent1.style.display = "block";
+    	mypageContent2.style.display = "none";
+    	mypageContent3.style.display = "none";
+	});
+    
     function toggleContent(id) {
     	var mypageContent1 = document.getElementsByClassName("mypageContent1")[0];
     	var mypageContent2 = document.getElementsByClassName("mypageContent2")[0];
     	var mypageContent3 = document.getElementsByClassName("mypageContent3")[0];
 
+		// Hide all page content elements
     	mypageContent1.style.display = "none";
     	mypageContent2.style.display = "none";
     	mypageContent3.style.display = "none";
