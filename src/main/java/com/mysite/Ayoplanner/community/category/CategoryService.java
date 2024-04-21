@@ -13,19 +13,19 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class CategoryService {
-	
+
 	private final CategoryRepository categoryRepository;
-	
+
 	public List<Category> getList() {
 		return categoryRepository.findAll();
 	}
-	
+
 	public Category getCategory(String categoryName) {
-        Optional<Category> category = this.categoryRepository.findByName(categoryName);
-        if (category.isPresent()) {
-            return category.get();
-        } else {
-            throw new DataNotFoundException(ErrorCode.RESOURCE_NOT_FOUND);
-        }
+		Optional<Category> category = this.categoryRepository.findByName(categoryName);
+		if (category.isPresent()) {
+			return category.get();
+		} else {
+			throw new DataNotFoundException(ErrorCode.RESOURCE_NOT_FOUND);
+		}
 	}
 }
