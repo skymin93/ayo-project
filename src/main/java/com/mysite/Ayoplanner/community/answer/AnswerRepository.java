@@ -15,7 +15,7 @@ public interface AnswerRepository extends JpaRepository<Answer, Integer> {
 
 	Long countByAuthor(SiteUser author);
 
-	List<Answer> findTop5ByAuthorOrderByCreateDateDesc(SiteUser user);
+	List<Answer> findByAuthorOrderByCreateDateDesc(SiteUser user);
 
 	Page<Answer> findAllByPost(Post post, Pageable pagealbe);
 
