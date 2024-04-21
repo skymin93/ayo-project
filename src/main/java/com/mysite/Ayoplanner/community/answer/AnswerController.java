@@ -33,7 +33,6 @@ public class AnswerController {
 
 	@PreAuthorize("isAuthenticated()")
 	@PostMapping("/create/{id}")
-
 	public String createAnswer(Model model, @PathVariable("id") Integer id, @Valid AnswerForm answerForm,
 			BindingResult bindingResult, Principal principal) {
 		Post post = this.postService.getPost(id);
