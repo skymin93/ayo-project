@@ -22,7 +22,8 @@ import com.mysite.Ayoplanner.community.post.Post;
 import com.mysite.Ayoplanner.community.post.PostService;
 import com.mysite.Ayoplanner.exception.DataNotFoundException;
 import com.mysite.Ayoplanner.exception.EmailException;
-import com.mysite.Ayoplanner.snslogin.PrincipalDetails;
+import com.mysite.Ayoplanner.exception.ErrorCode;
+import com.mysite.Ayoplanner.sociallogin.PrincipalDetails;
 
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -37,6 +38,7 @@ public class UserController {
 	private final UserService userService;
 	private final UserRepository userRepository;
 
+	@GetMapping("/signup")
 	public String signup(UserCreateForm userCreateForm) {
 		return "signup_form";
 	}
@@ -99,16 +101,21 @@ public class UserController {
 	public String showmyPage(Model model, Principal principal) {
 		SiteUser user = userService.getUser(principal.getName());
 
+		if (user == null) {
+			throw new DataNotFoundException(ErrorCode.USER_NOT_FOUND_BY_USERNAME);
+		}
+		model.addAttribute("user", user);
+		
 		Long postCount = postService.getPostCount(user);
 		model.addAttribute("postCount", postCount);
 
-		List<Post> postList = postService.getPostTop5LatestByUser(user);
+		List<Post> postList = postService.getPostLatestByUser(user);
 		model.addAttribute("postList", postList);
 
 		Long answerCount = answerService.getAnswerCount(user);
 		model.addAttribute("answerCount", answerCount);
 
-		List<Answer> answerList = answerService.getAnswerTop5LatestByUser(user);
+		List<Answer> answerList = answerService.getAnswerLatestByUser(user);
 		model.addAttribute("answerList", answerList);
 
 		return "mypage";
