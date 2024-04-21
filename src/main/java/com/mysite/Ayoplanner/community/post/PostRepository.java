@@ -14,7 +14,7 @@ import com.mysite.Ayoplanner.user.SiteUser;
 
 @Repository
 public interface PostRepository extends JpaRepository<Post, Integer>{
-	Post findBySubject(String subject);
+	Post findBySubject(String subject); 
 	Post findBySubjectAndContent(String subject, String content);
 	List<Post> findBySubjectLike(String subject);
 	Page<Post> findAll(Pageable pageable);
@@ -42,8 +42,6 @@ public interface PostRepository extends JpaRepository<Post, Integer>{
 		        + "   or u2.username like %:kw% ")
 		    Page<Post> findAllByKeyword(@Param("kw") String kw, Pageable pageable);
 		    
-		    
-		    //질문자가 작성한 질문글만
 		    @Query("select "
 		    		+ "distinct q "
 		    		+ "from Post q "
@@ -60,7 +58,6 @@ public interface PostRepository extends JpaRepository<Post, Integer>{
 		    		+ "   )")
 			Page<Post> findAllByKeywordAndAuthorId(@Param("kw") String kw, @Param("authorId") Long authorId, Pageable pageable);
 			
-		    //질문자가 작성한 답변글만
 		    @Query("select "
 		    		+ "distinct q "
 		    		+ "from Post q "
@@ -79,6 +76,6 @@ public interface PostRepository extends JpaRepository<Post, Integer>{
 		    Page<Post> findAllByKeywordAndAnswer_AuthorId(@Param("kw") String kw, @Param("authorId") Long authorId, Pageable pageable);
 			
 		    Long countByAuthor(SiteUser author);
-			List<Post> findTop5ByAuthorOrderByCreateDateDesc(SiteUser author);
+			List<Post> findByAuthorOrderByCreateDateDesc(SiteUser author);
 			
 }
