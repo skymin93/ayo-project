@@ -61,8 +61,8 @@ public class AnswerService {
 		return answerRepository.countByAuthor(author);
 	}
 
-	public List<Answer> getAnswerTop5LatestByUser(SiteUser user) {
-		return answerRepository.findTop5ByAuthorOrderByCreateDateDesc(user);
+	public List<Answer> getAnswerLatestByUser(SiteUser user) {
+		return answerRepository.findByAuthorOrderByCreateDateDesc(user);
 	}
 
 	public Page<Answer> getList(Post post, int page) {
