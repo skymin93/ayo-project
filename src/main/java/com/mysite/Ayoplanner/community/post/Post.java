@@ -24,13 +24,12 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-
 public class Post {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
-	@Column(length = 200)
+	@Column(length = 200) 
 	private String subject;
 
 	@Column(columnDefinition = "TEXT")
@@ -56,6 +55,5 @@ public class Post {
 	private Category category;
 
 	@Column(columnDefinition = "Integer default 0", nullable = false)
-	private int countview;
-
+	private int hit;
 }
