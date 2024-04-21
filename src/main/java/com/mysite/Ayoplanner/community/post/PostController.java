@@ -47,13 +47,14 @@ public class PostController {
 	@GetMapping(value = "/post/detail/{id}")
 	public String detail(Model model, @PathVariable("id") Integer id, AnswerForm answerForm,
 			@RequestParam(value = "answerPage", defaultValue = "0") int answerPage) {
-		Post post = this.postService.getPost(id);
+		Post post = this.postService.hitPost(id);
 		Page<Answer> answerPaging = this.answerService.getList(post, answerPage);
 		model.addAttribute("post", post);
 		model.addAttribute("answerPaging", answerPaging);
 		return "post_detail";
 	}
 
+	// joinMember list
 	@GetMapping("/post/list/joinMember")
 	public String joinMemberList(Model model, @RequestParam(value = "page", defaultValue = "0") int page,
 			@RequestParam(value = "kw", defaultValue = "") String kw) {
@@ -63,6 +64,7 @@ public class PostController {
 		return "post_list_joinMember";
 	}
 
+	// transportation list
 	@GetMapping("/post/list/transportation")
 	public String transportationList(Model model, @RequestParam(value = "page", defaultValue = "0") int page,
 			@RequestParam(value = "kw", defaultValue = "") String kw) {
@@ -72,6 +74,7 @@ public class PostController {
 		return "post_list_transportation";
 	}
 
+	// tripplan list
 	@GetMapping("/post/list/tripplan")
 	public String tripplanList(Model model, @RequestParam(value = "page", defaultValue = "0") int page,
 			@RequestParam(value = "kw", defaultValue = "") String kw) {
@@ -81,6 +84,7 @@ public class PostController {
 		return "post_list_tripplan";
 	}
 
+	// city list
 	@GetMapping("/post/list/city")
 	public String cityList(Model model, @RequestParam(value = "page", defaultValue = "0") int page,
 			@RequestParam(value = "kw", defaultValue = "") String kw) {
@@ -90,6 +94,7 @@ public class PostController {
 		return "post_list_city";
 	}
 
+	// expenses list
 	@GetMapping("/post/list/expenses")
 	public String expensesList(Model model, @RequestParam(value = "page", defaultValue = "0") int page,
 			@RequestParam(value = "kw", defaultValue = "") String kw) {
@@ -99,6 +104,7 @@ public class PostController {
 		return "post_list_expenses";
 	}
 
+	// info list
 	@GetMapping("/post/list/info")
 	public String infoList(Model model, @RequestParam(value = "page", defaultValue = "0") int page,
 			@RequestParam(value = "kw", defaultValue = "") String kw) {
@@ -108,6 +114,7 @@ public class PostController {
 		return "post_list_info";
 	}
 
+	// hotel list
 	@GetMapping("/post/list/hotel")
 	public String hotelList(Model model, @RequestParam(value = "page", defaultValue = "0") int page,
 			@RequestParam(value = "kw", defaultValue = "") String kw) {
@@ -117,49 +124,6 @@ public class PostController {
 		return "post_list_hotel";
 	}
 	
-	@PreAuthorize("isAuthenticated()")
-	@GetMapping("post/list/byPost/{id}")
-	public String personalListByPost(Model model, @PathVariable Long id,
-			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "") String kw,
-			Principal principal) {
-
-		SiteUser siteUser = userService.getUser(principal.getName());
-
-		if (siteUser.getId() != id) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "조회 권한이 없습니다.");
-		}
-
-		Page<Post> paging = postService.getPersonalPostListByPostAuthorId(page, kw, id);
-		model.addAttribute("user", siteUser);
-		model.addAttribute("paging", paging);
-		// 동일한 템플릿 사용 -> 총 답변수로 표기하기 위함
-		model.addAttribute("type", "총 질문수");
-		return "mypage";
-	}
-
-	@PreAuthorize("isAuthenticated()")
-	@GetMapping("post/list/byAnswer/{id}")
-	public String personalListByAnswer(Model model, @PathVariable Long id,
-			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "") String kw,
-			Principal principal) {
-		SiteUser siteUser = userService.getUser(principal.getName());
-
-		if (siteUser.getId() != id) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "조회 권한이 없습니다.");
-		}
-
-		// 총 답변 수 View에 나타내기 위함
-		Long answerCount = answerService.getAnswerCount(siteUser);
-		model.addAttribute("answerCount", answerCount);
-
-		Page<Post> paging = postService.getPersonalPostListByAnswer_AuthorId(page, kw, id);
-		model.addAttribute("user", siteUser);
-		model.addAttribute("paging", paging);
-		// 동일한 템플릿 사용 -> 총 답변수로 표기하기 위함
-		model.addAttribute("type", "총 답변수");
-		return "mypage";
-	}
-
 	@PreAuthorize("isAuthenticated()")
 	@GetMapping("/post/create")
 	public String postCreate(Model model, PostForm questionForm) {
