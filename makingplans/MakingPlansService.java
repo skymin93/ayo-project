@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 public class MakingPlansService {
 	
 	private final CityInfoRepository cityInfoRepository;
+	private final SavePlanRepository savePlanRepository;
 	
 	public List<CityInfo> getList() {
 		return this.cityInfoRepository.findAll();
@@ -28,4 +29,10 @@ public class MakingPlansService {
 		}
 		
 	}
+	
+	public void savePlanData(String savePlanData) {
+        SavePlan savePlan = new SavePlan();
+        savePlan.setSavePlanData(savePlanData);
+        savePlanRepository.save(savePlan);
+    }
 }
