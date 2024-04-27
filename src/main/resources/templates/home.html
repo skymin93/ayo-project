@@ -283,11 +283,11 @@
         	<br></br>
         	<p class="leftStart-text" id="cityInfo"></p>
         </div>
-        <a>
-        	<button class="custom-btn-make" type="button" id="btn_make">
-                <a href="@{/makingplans}"><b>일정만들기 ></b></a>
-            </button>
-        </a>
+		<a href="#" onclick="openMakingPlans()">
+		    <button class="custom-btn-make" type="button" id="btn_make">
+		        <b>일정만들기 ></b>
+		    </button>
+		</a>
         <a>
             <button class="custom-btn-airplane" type="button" id="btn_airplane">
                 <a href="https://www.skyscanner.co.kr/"><b>항공권 예매</b></a>
@@ -365,6 +365,8 @@ function filterCities() {
     	document.getElementById("cityName1").innerHTML = cityName1;
     	document.getElementById("cityName2").innerHTML = cityName2; // Display Korean city name in the modal
 		document.getElementById("cityInfo").innerHTML = cityInfo; // Display city information in the modal
+		
+		modal.setAttribute("data-id", parseInt(id));
 }
 
     // Function to close the modal
@@ -380,6 +382,14 @@ function filterCities() {
             modal.style.display = "none";
         }
     }
+	
+	function openMakingPlans() {
+	    var modal = document.getElementById("myModal");
+	    var id = parseInt(modal.getAttribute("data-id")); // 문자열을 숫자로 변환
+	    var url = "/makingplans/detail/" + id;
+	    window.location.href = url;
+	}
+	
 </script>
 
 </body>
