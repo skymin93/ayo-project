@@ -17,13 +17,6 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import com.mysite.Ayoplanner.sociallogin.CustomOAuth2UserService;
 
-//Oauth 로그인 진행 순서
-//1. 인가 코드 발급(회원 인증)
-//2. 엑세스 토큰 발급(접근 권한 부여)
-//3. 액세스 토큰을 이용해 사용자 정보 불러오기
-//4. 불러온 사용자 정보를 토대로 자동 회원가입/로그인 진행
-//※ 소셜 플랫폼의 로그인과 프로젝트 앱의 로그인은 별개임!!
-
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
@@ -38,7 +31,6 @@ public class SecurityConfig {
 	 * @throws Exception
 	 */
 
-	// @Bean -> 해당 메소드의 리턴되는 오브젝트를 IoC로 등록해줌
 	@Bean
 	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http.authorizeHttpRequests((authorizeHttpRequests) -> authorizeHttpRequests
