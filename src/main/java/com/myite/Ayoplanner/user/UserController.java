@@ -42,13 +42,11 @@ public class UserController {
 	private final UserService userService;
 	private final UserRepository userRepository;
 
-	// /signup URL이 GET으로 요청되면 회원 가입을 위한 템플릿 렌더링
 	@GetMapping("/signup")
 	public String signup(UserCreateForm userCreateForm) {
 		return "signup_form";
 	}
 
-	// /signup URL이 POST로 요청되면 회원가입 진행
 	@PostMapping("/signup")
 	public String signup(@Valid UserCreateForm userCreateForm, BindingResult bindingResult) {
 		if (bindingResult.hasErrors()) {
@@ -73,13 +71,11 @@ public class UserController {
 		return "redirect:/";
 	}
 
-	// 로그인 화면
 	@GetMapping("/login")
 	public String login() {
 		return "login_form";
 	}
 
-	// 비밀번호 찾기시, 임시 비밀번호 담긴 이메일 보내기
 	@GetMapping("/tempPassword")
 	public String tempPassword(TempPasswordForm tempPasswordForm) {
 		return "TempPasswordForm";
@@ -104,7 +100,6 @@ public class UserController {
 		return "redirect:/";
 	}
 
-	// 마이페이지 화면
 	@GetMapping("/mypage")
 	@PreAuthorize("isAuthenticated()")
 	public String showmyPage(Model model, Principal principal) {
@@ -126,19 +121,14 @@ public class UserController {
 
 		List<Answer> answerList = answerService.getAnswerLatestByUser(user);
 		model.addAttribute("answerList", answerList);
-
-//		List<Plan> planList = planService.getPlanLatestByUser(user);
-//		model.addAttribute("planList", planList);
 		return "mypage";
 	}
 	
-	// 회원정보수정전 비밀번호 체크 view
 	@GetMapping("/mypage/checkPwdForm")
 	public String checkPwdView() {
 		return "checkPwdForm";
 	}
 
-	// 회원정보수정전 비밀번호 체크
 	@GetMapping("mypage/checkPwd")
 	@ResponseBody
 	public boolean checkPassword(@AuthenticationPrincipal PrincipalDetails principal,
@@ -148,7 +138,6 @@ public class UserController {
 		return userService.checkPassword(checkName, checkPassword);
 	}
 
-	// 닉네임 수정 view
 	@PreAuthorize("isAuthenticated()")
 	@GetMapping("/mypage/profile")
 	public String showProfilePage(Model model, Principal principal) {
@@ -161,14 +150,13 @@ public class UserController {
 	    return "mypage_profile";
 	}
 
-	// 닉네임 수정
 	@PreAuthorize("isAuthenticated()")
 	@PostMapping("/mypage/profile")
 	public String changeUsername(Principal principal, @RequestParam("newUsername") String newUsername) {
 	    String username = principal.getName();
 	    try {
             userService.changeUsername(username, newUsername);
-         // Update the current user's authentication with the new username
+
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(newUsername, null, SecurityContextHolder.getContext().getAuthentication().getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             return "redirect:/mypage/profile";
@@ -177,7 +165,6 @@ public class UserController {
 	    }
 	}
 	
-	// 마이페이지 - 비밀번호 변경 view
 	@PreAuthorize("isAuthenticated()")
 	@GetMapping("/mypage/changePassword")
 	public String changePasswordForm(Model model) {
@@ -185,7 +172,6 @@ public class UserController {
 		return "mypage_changePassword";
 	}
 
-	// 마이페이지 - 비밀번호 변경
 	@PreAuthorize("isAuthenticated()")
 	@PostMapping("/mypage/changePassword")
 	@Transactional
@@ -204,7 +190,6 @@ public class UserController {
 		return "redirect:/mypage";
 	}
 
-	// 회원탈퇴 화면
 	@PreAuthorize("isAuthenticated()")
 	@GetMapping("/mypage/deleteUser")
 	public String deleteUser(Model model) {
@@ -212,7 +197,6 @@ public class UserController {
 		return "mypage_deleteUser";
 	}
 
-	// 회원탈퇴
 	@PreAuthorize("isAuthenticated()")
 	@PostMapping("/mypage/deleteUser")
 	public String deleteUser(@ModelAttribute("userDeleteForm") @Valid UserDeleteForm userDeleteForm,
