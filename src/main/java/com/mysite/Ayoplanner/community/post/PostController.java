@@ -34,7 +34,6 @@ public class PostController {
 	private final AnswerService answerService;
 	private final CategoryService categoryService;
 
-	// postlist 첫화면
 	@GetMapping("/post/list")
 	public String getLatestPosts(Model model, @RequestParam(value = "page", defaultValue = "0") int page,
 			@RequestParam(value = "kw", defaultValue = "") String kw) {
@@ -45,7 +44,6 @@ public class PostController {
 		return "post_list";
 	}
 
-	// post 상세 페이지
 	@GetMapping(value = "/post/detail/{id}")
 	public String detail(Model model, @PathVariable("id") Integer id, AnswerForm answerForm,
 			@RequestParam(value = "answerPage", defaultValue = "0") int answerPage) {
@@ -56,7 +54,6 @@ public class PostController {
 		return "post_detail";
 	}
 
-	// joinMember list
 	@GetMapping("/post/list/joinMember")
 	public String joinMemberList(Model model, @RequestParam(value = "page", defaultValue = "0") int page,
 			@RequestParam(value = "kw", defaultValue = "") String kw) {
@@ -66,7 +63,6 @@ public class PostController {
 		return "post_list_joinMember";
 	}
 
-	// transportation list
 	@GetMapping("/post/list/transportation")
 	public String transportationList(Model model, @RequestParam(value = "page", defaultValue = "0") int page,
 			@RequestParam(value = "kw", defaultValue = "") String kw) {
@@ -76,7 +72,6 @@ public class PostController {
 		return "post_list_transportation";
 	}
 
-	// tripplan list
 	@GetMapping("/post/list/tripplan")
 	public String tripplanList(Model model, @RequestParam(value = "page", defaultValue = "0") int page,
 			@RequestParam(value = "kw", defaultValue = "") String kw) {
@@ -86,7 +81,6 @@ public class PostController {
 		return "post_list_tripplan";
 	}
 
-	// city list
 	@GetMapping("/post/list/city")
 	public String cityList(Model model, @RequestParam(value = "page", defaultValue = "0") int page,
 			@RequestParam(value = "kw", defaultValue = "") String kw) {
@@ -96,7 +90,6 @@ public class PostController {
 		return "post_list_city";
 	}
 
-	// expenses list
 	@GetMapping("/post/list/expenses")
 	public String expensesList(Model model, @RequestParam(value = "page", defaultValue = "0") int page,
 			@RequestParam(value = "kw", defaultValue = "") String kw) {
@@ -106,7 +99,6 @@ public class PostController {
 		return "post_list_expenses";
 	}
 
-	// info list
 	@GetMapping("/post/list/info")
 	public String infoList(Model model, @RequestParam(value = "page", defaultValue = "0") int page,
 			@RequestParam(value = "kw", defaultValue = "") String kw) {
@@ -116,7 +108,6 @@ public class PostController {
 		return "post_list_info";
 	}
 
-	// hotel list
 	@GetMapping("/post/list/hotel")
 	public String hotelList(Model model, @RequestParam(value = "page", defaultValue = "0") int page,
 			@RequestParam(value = "kw", defaultValue = "") String kw) {
@@ -133,7 +124,6 @@ public class PostController {
 		return "post_form";
 	}
 
-	// 카테고리이름으로 카테고리엔티티조회, 조회한카테고리엔티티를 질문 엔티티에 넣는다
 	@PreAuthorize("isAuthenticated()")
 	@PostMapping("/post/create")
 	public String createPost(Model model, @Valid PostForm postForm, BindingResult bindingResult, Principal principal) {
