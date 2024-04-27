@@ -22,7 +22,7 @@ public class CommonUtil {
 	public String createTempPassword() {
 		StringBuilder key = new StringBuilder();
 
-		for (int i = 0; i < 8; i++) { // 8자리
+		for (int i = 0; i < 8; i++) {
 			int index = rnd.nextInt(3);
 			switch (index) {
 			case 0:
