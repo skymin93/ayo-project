@@ -35,7 +35,6 @@ public class PostService {
 	private final PostRepository postRepository;
 	private final CategoryService categoryService;
 
-	// 유저 개인별 질문 모음(질문자)
 	public Page<Post> getPersonalPostListByPostAuthorId(int page, String kw, Long authorId) {
 		List<Sort.Order> sorts = new ArrayList<>();
 		sorts.add(Sort.Order.desc("createDate"));
@@ -43,7 +42,6 @@ public class PostService {
 		return postRepository.findAllByKeywordAndAuthorId(kw, authorId, pageable);
 	}
 
-	// 유저 개인별 질문 모음(답변자)
 	public Page<Post> getPersonalPostListByAnswer_AuthorId(int page, String kw, Long answerAuthorId) {
 		List<Sort.Order> sorts = new ArrayList<>();
 		sorts.add(Sort.Order.desc("createDate"));
