@@ -1,0 +1,226 @@
+<html layout:decorate="~{layout}">
+<div layout:fragment="content" class="container my-3">
+	<link rel="stylesheet" type="text/css" th:href="@{/style.css}">
+	<section class="mypage-container">
+		<div class="mypage-profile">
+			<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+                <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
+                <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
+            </svg>
+            <p th:text="${user.username}"></p>
+            <h5 class="my-3" th:text="${username}"></h5>
+            	<a th:href="@{/mypage/checkPwdForm}" class="blue-text">
+                <b>프로필 수정</b>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-gear-fill" viewBox="0 0 16 16">
+                    <path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z"/>
+                </svg>
+            	</a>
+            	<a th:href="@{/mypage/deleteUser}" class="gray-text">회원 탈퇴</a>
+        </div>
+        
+        <div class="mypage-content">
+            <div class="mypage-category">
+                <div class="category" style="display: inline-block; width: 300px;">
+                    <a class="categorybar" onclick="toggleContent(1)" id="1"><b>작성글</b></a>
+                </div>
+                <div class="category" style="display: inline-block; width: 300px;">
+                    <a class="categorybar" onclick="toggleContent(2)" id="2"><b>작성댓글</b></a>
+                </div>
+                <div class="category" style="display: inline-block; width: 300px;">
+                    <a class="categorybar" onclick="toggleContent(3)" id="3"><b>나의일정</b></a>
+                </div>
+            </div>
+            <div class="mypageContent1">
+            	<div class="card d-flex flex-column align-items-center shadow p-3 mb-5 bg-body rounded" style="margin-top : 10px;">
+                	<div class="card-body gap-3">
+                    	<div class="d-flex align-items-baseline justify-content-center gap-2">
+                        	<h5><b>나의 작성글</b></h5>
+                        	<h5 th:text="${'('+ postCount+')'}"></h5>
+                         	<br></br>
+                    	</div>
+                   		<table class="table">
+                        	<thead class="table-white">
+                            	<tr>
+									<th style="width:50px; text-align:center;">번호</th>
+									<th style="width:390px; text-align:center;">제목</th>
+									<th style="width:150px; text-align:left;">작성일</th>
+									<th style="width:180px; text-align:left;">수정일</th>
+									<th style="width:80px; text-align:right;">조회수</th>
+								</tr>
+                        	</thead>
+                        	<tbody>
+                            	<tr th:each="post, loop : ${postList}" id="postContent">
+                                	<td style="width:50px; text-align:left;" th:text="${post.id}"></td>
+                                	<td>
+										<div>
+                                    		<a th:href="@{|/post/detail/${post.id}|}" th:text="${post.subject}" style="text-align:center; width:390px; padding: 12px 0;"></a>
+                                    		<span class="text-danger small ms-2" th:if="${#lists.size(post.answerList) > 0}" th:text="${#lists.size(post.answerList)}"></span>
+                                		</div>
+                                	</td>
+                                	<td th:text="${#temporals.format(post.createDate, 'yyyy-MM-dd')}" style="text-align:right; width:150px; padding: 12px 0;">
+									</td>
+                                	<td th:if="${post.modifyDate == null}">
+									</td>
+                                	<td th:if="${post.modifyDate != null}" th:text="${#temporals.format(post.modifyDate, 'yyyy-MM-dd')}" style="text-align:right; width:180px; padding: 12px 0;">
+									</td>
+                                	<td th:text="${post.hit}" style="text-align:right; width:80px;">
+									</td>
+                            	</tr>
+                        	</tbody>
+                    	</table>
+                	</div>
+            	</div>
+			</div>
+			<div class="mypageContent2">
+            	<div class="card d-flex flex-column align-items-center shadow p-3 mb-5 bg-body rounded" style="margin-top : 10px;">
+                	<div class="card-body gap-3">
+                    	<div class="d-flex align-items-baseline justify-content-center gap-2">
+                        	<i class="fa-solid fa-user" style="color: #75a8ff;"></i>
+                        	<h5><b>나의 댓글</b></h5>
+                        	<h5 th:text="${'('+ answerCount+')'}"></h5>
+                        	<br></br>
+                    	</div>
+                    	<table class="table" style="width: 700px;">
+                        	<thead class="table-white">
+                            	<tr class="text-center">
+                                	<th style="width:200px;">제목</th>
+                                	<th style="width:200px;">내용</th>
+                                	<th style="width:200px;">작성일</th>
+                                	<th style="width:100px;">수정일</th>
+                            	</tr>
+                        	</thead>
+                        	<tbody>
+                            	<tr class="text-center" th:each="answer, loop : ${answerList}" id="answerContent">
+                                	<td class="text-start">
+                                    	<div class="d-flex flex-column align-items-center justify-center">
+                                        	<i class="fa-regular fa-circle-question" style="color: #75a8ff;"></i>
+                                        	<a th:href="@{|/post/detail/${answer.post.id}#answer_${answer.id}|}" th:text="${answer.post.subject}"></a>
+                                    	</div>
+                                	</td>
+                                	<td>
+                                    	<div class="d-flex flex-column align-items-center justify-center">
+                                        	<span th:text="${answer.content}"></span>
+                                    	</div>
+                                	</td>
+                                	<td th:text="${#temporals.format(answer.createDate, 'yyyy-MM-dd')}" style="text-align:right; min-width:80px; padding: 12px 0;"></td>
+                                	<td th:if="${answer.modifyDate == null}" style="text-align:right; min-width:120px; padding: 12px 0;"> </td>
+                                	<td th:if="${answer.modifyDate != null}" th:text="${#temporals.format(answer.modifyDate, 'yyyy-MM-dd HH:mm')}" style="min-width:120px; padding: 12px 0;"></td>
+                            	</tr>
+                        	</tbody>
+                    	</table>
+                	</div>
+            	</div>
+            </div>
+            <div class="mypageContent3">
+            	<div class="card d-flex flex-column align-items-center shadow p-3 mb-5 bg-body rounded" style="margin-top : 10px;">
+                	<div class="card-body gap-3">
+                    	<div class="d-flex align-items-baseline justify-content-center gap-2">
+                        	<i class="fa-solid fa-user" style="color: #75a8ff;"></i>
+                        	<h5><b>나의 일정</b></h5>
+                        	<br></br>
+                    	</div>
+                    	<table class="table" style="width: 700px;">
+                        	<thead class="table-white">
+                            	<tr class="text-center">
+                                	<th style="width:200px;">제목</th>
+                                	<th style="width:200px;">작성일</th>
+                                	<th style="width:200px;">수정일</th>
+                                	<th style="width:100px;">공유하기</th>
+                            	</tr>
+                        	</thead>
+                        	<tbody>
+                            	<tr>
+                                	<td>
+                                    	<div class="d-flex flex-column align-items-center justify-center">
+                                        	<a></a>
+                                    	</div>
+                                	</td>
+                                	<td style="text-align:right; min-width:80px; padding: 12px 0;"></td>
+                                	<td style="text-align:right; min-width:120px; padding: 12px 0;"> </td>
+                                	<td style="min-width:120px; padding: 12px 0;"></td>
+                                	<td style="text-align:right;">
+										<script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.1/kakao.min.js"
+  											integrity="sha384-kDljxUXHaJ9xAb2AzRd59KxjrFjzHa5TAoFQ6GbYTCAG0bjM55XohjjDT7tDDC01" 
+  											crossorigin="anonymous"></script>
+										
+										<script>
+  											Kakao.init('3e7af3a32ff1454a8389e0ac598b95ea'); // 사용하려는 앱의 JavaScript 키 입력
+										</script>
+										<a id="kakaotalk-sharing-btn" href="javascript:;">
+  											<img src="https://developers.kakao.com/assets/img/about/logos/kakaotalksharing/kakaotalk_sharing_btn_medium.png"
+    										alt="카카오톡 공유 보내기 버튼" />
+										</a>
+									</td>
+                            	</tr>
+                        	</tbody>
+                    	</table>
+                	</div>
+            	</div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script layout:fragment="script" type='text/javascript'>
+    
+    document.addEventListener("DOMContentLoaded", function() {
+   
+    // Hide all page content elements except mypageContent1
+    	var mypageContent1 = document.getElementsByClassName("mypageContent1")[0];
+    	var mypageContent2 = document.getElementsByClassName("mypageContent2")[0];
+    	var mypageContent3 = document.getElementsByClassName("mypageContent3")[0];
+    
+    	mypageContent1.style.display = "block";
+    	mypageContent2.style.display = "none";
+    	mypageContent3.style.display = "none";
+	});
+    
+    function toggleContent(id) {
+    	var mypageContent1 = document.getElementsByClassName("mypageContent1")[0];
+    	var mypageContent2 = document.getElementsByClassName("mypageContent2")[0];
+    	var mypageContent3 = document.getElementsByClassName("mypageContent3")[0];
+
+		// Hide all page content elements
+    	mypageContent1.style.display = "none";
+    	mypageContent2.style.display = "none";
+    	mypageContent3.style.display = "none";
+
+    	// Display the appropriate content based on the provided id
+    	if (id === 1) {
+        	mypageContent1.style.display = "block";
+    	} else if (id === 2) {
+        	mypageContent2.style.display = "block";
+    	} else if (id === 3) {
+        	mypageContent3.style.display = "block";
+    	}
+	}
+
+  Kakao.Share.createDefaultButton({
+    container: '#kakaotalk-sharing-btn',
+    objectType: 'feed',
+    content: {
+      title: 'AyoPlanner',
+      description: '#AyoPlanner #여행 #떠나자 #계획 #일정',
+      imageUrl:
+        '/images/0.로고.png',
+      link: {
+        // [내 애플리케이션] > [플랫폼] 에서 등록한 사이트 도메인과 일치해야 함
+        webUrl: 'http://localhost:8080',
+      },
+    },
+    social: {
+      likeCount: 333,
+      commentCount: 97,
+      sharedCount: 531,
+    },
+    buttons: [
+      {
+        title: '웹으로 보기',
+        link: {
+          webUrl: 'http://localhost:8080',
+        },
+      },
+    ],
+  });
+</script>
+</html>

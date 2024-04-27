@@ -1,0 +1,44 @@
+<html layout:decorate="~{layout}">
+	<div layout:fragment="content" class="container">
+		<link rel="stylesheet" type="text/css" th:href="@{/style.css}">
+	<body>
+		<div>
+		<h3>AyoPlanner</h3>
+		<p>여행 스케줄링 플래너, 에이요플래너</p>
+		</div>
+		
+		<div class="updateProfile-container">
+			<h5 class="leftStart-text" style="margin-bottom:30px;"><b>프로필 설정</b></h5>
+				<form th:action="@{/mypage/profile}" method="post">
+					<div class="input-group input-group-static mb-3">
+						<label for="username" style="font-weight: bold; margin-right: 10px;">기존 닉네임 </label>
+						<input type="text" id="username" th:value="${siteUser.username}" class="form-control">
+					</div>
+        			<div class="input-group input-group-static mb-3">
+            			<label for="newUsername" style="font-weight: bold; margin-right: 10px;">변경할 닉네임</label>
+            			<input type="text" id="newUsername" name="newUsername" class="form-control" required>
+        			</div>
+        			<div class="input-group input-group-static mb-3">
+						<label style="font-weight: bold; margin-right: 10px;">이메일 </label>
+						<input type="text" id="email" th:value="${siteUser.email}" class="form-control" readonly>
+					</div>
+					<div>
+						<br></br>
+						<h5 class="leftStart-text" style="margin-bottom:30px;"><b>비밀번호 설정</b></h5>
+						<div class="leftStart-text">
+						<a th:href="@{/mypage/changePassword}" class="blue-text">비밀번호 변경하기</a>
+						</div>
+					</div>
+					<div class="leftStart-text" style="margin-top:10px;">
+						<a th:href="@{/mypage/deleteUser}" class="red-text">회원 탈퇴하기</a>
+					</div>
+					<div style="display:flex; margin-top:30px; justify-content: space-between;">
+						<a type="button" id="backToMypage" class="custom-btn2-common" value="돌아가기"
+							th:href="@{/mypage}" style="margin-right:20px;">돌아가기</a>
+						<button type="submit" class="custom-btn3-common">회원정보수정</button>
+					</div>
+			</form>
+		</div>
+	</body>
+	</div>
+</html>
