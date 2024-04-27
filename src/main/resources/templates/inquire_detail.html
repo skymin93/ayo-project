@@ -1,0 +1,80 @@
+<html layout:decorate="~{layout}">
+<div layout:fragment="content" class="container my-3">
+	<!-- 질문 -->
+	<h2 class="border-bottom py-2" th:text="${inquire.inquireSubject}"></h2>
+	<div class="card my-3">
+		<div class="card-body">
+			<div class="card-text" style="white-space: pre-line;" th:text="${inquire.inquireContent}"></div>
+			<div class="d-flex justify-content-end">
+				<div class="badge bg-light text-dark p-2 text-start">
+					<div class="mb-2">
+						<span th:if="${inquire.author != null}"
+						th:text="${inquire.author.username}"></span>
+					</div>
+					<div th:text="${#temporals.format(inquire.inquireCreateDate, 'yyyy-MM-dd HH:mm')}"></div>
+				</div>
+				<div class="my-3">
+					<a th:href="@{|/inquire/modify/${inquire.inquireId}|}" class="btn btn-sm btn-outline-secondary"
+					sec:authorize="isAuthenticated()"
+					th:if="${inquire.author != null and #authentication.
+					getPrincipal().getUsername() == inquire.author.username}"
+					th:text="수정"></a>
+					<a href="javascript:void(0);"
+					th:data-url="@{|/inquire/delete/${inquire.inquireId}|}"
+					class="delete btn btn-sm btn-outline-secondary" sec:authorize="isAuthenticated()"
+					th:if="${inquire.author != null and #authentication.getPrincipal().getUsername() == inquire.author.username}"
+					th:text="삭제"></a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 답변의 갯수 표시 -->
+	<h5 class="border-bottom my-3 py-2" th:text="|${#lists.size(inquire.adminAnswerList)}개의 답변이 있습니다.|"></h5>
+	<!-- 답변 반복 시작 -->
+	<div class="card my-3" th:each="adminAnswer : ${inquire.adminAnswerList}">
+		<div class="card-body">
+			<div class="card-text" style="white-space: pre-line;" th:text="${adminAnswer.answerContent}"></div>
+			<div class="d-flex justify-content-end">
+				<div class="badge bg-light text-dark p-2 text-start">
+					<div class="mb-2">
+						<span th:if="${adminAnswer.author != null}"
+						th:text="${adminAnswer.author.position}"></span>
+					</div>
+					<div th:text="${#temporals.format(adminAnswer.answerCreateDate, 'yyyy-MM-dd HH:mm')}"></div>
+				</div>
+			</div>
+			<div class="my-3">
+				<a th:href="@{|/adminanswer/modify/${adminAnswer.answerId}|}" class="btn btn-sm btn-outline-secondary"
+				sec:authorize="isAuthenticated()"
+				th:if="${adminAnswer.author != null and #authentication.getPrincipal().getUsername() == adminAnswer.author.adminEmail}"
+				th:text="수정"></a>
+				<a href="javascript:void(0);"
+				th:data-url="@{|/adminanswer/delete/${adminAnswer.answerId}|}"
+				class="delete btn btn-sm btn-outline-secondary" sec:authorize="isAuthenticated()"
+				th:if="${adminAnswer.author != null and #authentication.getPrincipal().getUsername() == adminAnswer.author.adminEmail}"
+				th:text="삭제"></a>
+			</div>
+		</div>
+	</div>
+	<!-- 답변 반복 끝  -->
+	<!-- 답변 작성 -->
+	<form th:action="@{|/adminanswer/create/${inquire.inquireId}|}" th:object="${adminAnswerForm}" th:if="${#authentication.principal.username == adminEmail}" method="post" class="my-3">
+		<div th:replace="~{form_errors :: formErrorsFragment}"></div>
+		<textarea sec:authorize="isAnonymous()" disabled
+		th:field="*{answerContent}" class="form-control" rows="10"></textarea>
+		<textarea sec:authorize="isAuthenticated()"
+		th:field="*{answerContent}" class="form-control" rows="10"></textarea>
+		<input type="submit" value="답변등록" class="btn btn-primary my-2">
+	</form>
+</div>
+<script layout:fragment="script" type='text/javascript'>
+const delete_elements = document.getElementsByClassName("delete");
+Array.from(delete_elements).forEach(function(element) {
+    element.addEventListener('click', function() {
+        if(confirm("정말로 삭제하시겠습니까?")) {
+            location.href = this.dataset.url;
+        };
+    });
+});
+</script>
+</html>

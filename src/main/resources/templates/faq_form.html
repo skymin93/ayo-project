@@ -1,0 +1,23 @@
+<html layout:decorate="~{layout}">
+	<div layout:fragment="content" class="container">
+		<link rel="stylesheet" type="text/css" th:href="@{/style.css}">
+		<!-- 커뮤니티 게시판 메뉴-->
+		<div class="post-container">	
+		<div class="post-content">
+			<h5 class="leftStart-text">자주묻는질문 등록</h5>
+			<form th:object="${faqForm}" method="post" >
+				<div th:replace="~{form_errors :: formErrorsFragment}">
+				</div>
+			<div class="mb-3">
+				<label for="faqSubject" class="leftStart-text"><b>제목</b></label>
+				<input type="text" name="faqSubject" th:field="*{faqSubject}" id="faqSubject" class="form-control" placeholder="제목을 입력해주세요.">
+			</div>
+			<div class="mb-3">
+				<label for="faqContent" class="leftStart-text"><b>내용</b></label>
+				<textarea name="faqContent" id="faqContent" class="form-control" th:field="*{faqContent}" rows="10"></textarea>
+			</div>
+			<input type="submit" value="저장하기" class="custom-btn-post">
+		</form>
+	</div>
+	</div>
+</html>
