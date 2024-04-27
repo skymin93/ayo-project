@@ -1,0 +1,153 @@
+#dayContainer {
+	padding: 2rem;
+}
+
+.days_container {
+	display: flex;
+	overflow: auto;
+	justify-content: space-between;
+	align-items: flex-start;
+	gap: 2rem;
+	min-height: 300px;
+	padding: 2rem;
+}
+
+.day_card {
+	width: 350px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	align-items: center;
+	flex-shrink: 0;
+	box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+	-webkit-box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+	-moz-box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+}
+
+#place_divider {
+	border: 1px solid lightgray;
+}
+
+.day_image {
+	width: 50px;
+	height: 50px;
+	object-fit: cover;
+}
+
+.day_name {
+	white-space: normal;
+	text-align: left; 
+	font-size: 12px; 
+	font-weight: bold;
+}
+
+.day_address {
+	white-space: normal;
+	text-align: left; 
+	font-size: 12px;
+}
+
+.day_place {
+	margin: 1rem 0;
+}
+
+/* ===== Scrollbar CSS ===== */
+  /* Firefox */
+  * {
+    scrollbar-width: auto;
+    scrollbar-color: #adecac #ebf4e1;
+  }
+
+  /* Chrome, Edge, and Safari */
+  *::-webkit-scrollbar {
+    width: 16px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: #ebf4e1;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: #adecac;
+    border-radius: 10px;
+    border: 5px solid #efdcdc;
+  }
+  
+
+  
+  .save_btn {
+	padding: 0.5rem 1rem;
+	text-align: center;
+	background-color:  #adecac;
+	border-radius: 10px;
+	font-weight: bold;
+	border: 1px solid rgb(0, 128, 128);
+	font: white; 
+	transition: all 0.5s;
+  }
+  
+  .save_btn:hover {
+	background-color:  rgb(0, 128, 128);
+	color: white
+  }
+  
+      #map {
+      height: 100%;
+    }
+
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    #modal {
+      display: none;
+      position: fixed;
+      z-index: 1;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgb(0, 0, 0);
+      background-color: rgba(0, 0, 0, 0.4);
+      padding-top: 60px;
+    }
+
+    #modal-content {
+      background-color: #fefefe;
+      margin: 5% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+    }
+
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+      color: black;
+      text-decoration: none;
+      cursor: pointer;
+    }
+	
+	.filter-button.active {
+	    background-color: lightblue;
+	}
+	
+	/* 활성화된 버튼에 대한 스타일 */
+	.active-day {
+	    background-color: #007bff; /* 활성화된 버튼의 배경색 */
+	    color: white; /* 활성화된 버튼의 텍스트 색상 */
+	}
+	
+	.carousel-control-next.disabled {
+      background-color: black;
+    }
